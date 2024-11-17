@@ -1,11 +1,13 @@
-﻿create database Telecom_Team_12
+﻿drop database temp
+----------2.1---------
+create database Telecom_Team_12
 
 GO
 
 Use Telecom_Team_12
 
 GO
-create procedure createAllTables
+CREATE PROCEDURE createAllTables
 AS
 
 CREATE TABLE Customer_Profile (
@@ -51,7 +53,7 @@ Create table Subscription (
     check(status in ('active', 'onhold')),
 )
 
-create table Plan_Usage (
+CREATE TABLE Plan_Usage (
     usageID int primary key identity(1,1),
     start_date date,
     end_date date,
@@ -64,7 +66,7 @@ create table Plan_Usage (
     foreign key(planID) references Service_Plan
 )
 
-create table Payment(
+CREATE TABLE Payment(
     paymentID int primary key identity(1,1),
     amount decimal (10,1), 
     date_of_payment date, 
@@ -76,38 +78,16 @@ create table Payment(
     check(payment_method in ('cash', 'credit'))
 )
 
-create table Process_Payment (
+CREATE TABLE Process_Payment (
     paymentID int primary key identity(1,1),
     planID int,
     remaining_balance int, 
     extra_amount int,
     foreign key(paymentID) references Payment,
     foreign key(planID) references Service_Plan,
-    CHECK (
-        remaining_balance = 
-        CASE 
-            WHEN (SELECT amount FROM Payment p WHERE p.paymentID = Process_Payment.paymentID) < 
-                    (SELECT price FROM Service_Plan WHERE Service_Plan.planID = Process_Payment.planID)
-            THEN 
-                (SELECT price FROM Service_Plan WHERE Service_Plan.planID = Process_Payment.planID) - 
-                (SELECT amount FROM Payment WHERE Payment.paymentID = Process_Payment.paymentID)
-            ELSE 0
-        END
-    ),
-    CHECK (
-        additional_amounts = 
-        CASE 
-            WHEN (SELECT amount FROM Payment WHERE Payment.paymentID = Process_Payment.paymentID) > 
-                    (SELECT price FROM Service_Plan WHERE Service_Plan.planID = Process_Payment.planID)
-            THEN 
-                (SELECT amount FROM Payment WHERE Payment.paymentID = Process_Payment.paymentID) - 
-                (SELECT price FROM Service_Plan WHERE Service_Plan.planID = Process_Payment.planID)
-            ELSE 0
-        END
-    )
 )
 
-create table Wallet (
+CREATE TABLE Wallet (
     walletID int primary key identity(1,1), 
     current_balance decimal(10,2),
     currency Varchar(50), 
@@ -117,7 +97,7 @@ create table Wallet (
     foreign key(nationalID) references Customer_Profile
 )
 
-create table Transfer_money(
+CREATE TABLE Transfer_money(
     walletID1 int,
     walletID2 int,
     transfer_id int identity(1,1),
@@ -127,7 +107,7 @@ create table Transfer_money(
     foreign key (walletID1,walletID2) references Wallet
 )
 
-create table Benefits(
+CREATE TABLE Benefits(
     benefitID int primary key identity(1,1), 
     description Varchar(50), 
     validity_date date, 
@@ -137,7 +117,7 @@ create table Benefits(
     check(status in ('active','expired'))
 )
 
-create table Points_Group(
+CREATE TABLE Points_Group(
     pointID int identity(1,1), 
     benefitID int, 
     pointsAmount int, 
@@ -147,7 +127,7 @@ create table Points_Group(
     foreign key (PaymentID) references Payment
 )
 
-create table Exclusive_Offer(
+CREATE TABLE Exclusive_Offer(
     offerID int identity(1,1), 
     benefitID int, 
     internet_offered int, 
@@ -157,18 +137,18 @@ create table Exclusive_Offer(
     foreign key (benefitID) references Benefits
 )
 
-create table Cashback (
+CREATE TABLE Cashback (
     CashbackID int identity(1,1),
     benefitID int, 
     walletID int, 
-    amount int,
+    amount int DEFAULT(dbo.getCashback(benefitID)),
     credit_date date,
     primary key (CashbackID, benefitID),
     foreign key (benefitID) references Benefits,
     foreign key (walletID) references Wallet
 )
 
-create table Plan_Provides_Benefits (
+CREATE TABLE Plan_Provides_Benefits (
     benefitID int, 
     planID int,
     primary key (benefitID, planID),
@@ -176,27 +156,27 @@ create table Plan_Provides_Benefits (
     foreign key (planID) references Service_Plan
 )
 
-create table Shop (
+CREATE TABLE Shop (
     shopID int primary key identity(1,1), 
     name varchar(50), 
     category varchar(50)
 )
 
-create table Physical_Shop (
+CREATE TABLE Physical_Shop (
     shopID int primary key, 
     address varchar(50), 
     working_hours varchar(50),
     foreign key (shopID) references Shop
 )
 
-create table E_shop (
+CREATE TABLE E_shop (
     shopID int primary key, 
     URL varchar(50),
     rating int,
     foreign key (shopID) references Shop
 )
 
-create table Voucher(
+CREATE TABLE Voucher(
     voucherID int primary key identity(1,1),
     value int, 
     expiry_date date,
@@ -208,7 +188,7 @@ create table Voucher(
     foreign key(shopID) references Shop
 )
 
-create table Technical_Support_Ticket(
+CREATE TABLE Technical_Support_Ticket(
     ticketID int identity(1,1),
     mobileNo char(11), 
     Issue_description Varchar(50),
@@ -222,7 +202,27 @@ create table Technical_Support_Ticket(
 GO
 
 GO
-create procedure dropAllTables
+create function getCashback
+(@benifitID int)
+returns int 
+as
+BEGIN
+
+declare @amount int 
+select @amount = p.amount 
+from Benefit b
+inner join customer_account acc on b.mobileNo = acc.mobileNo 
+inner join payment p on acc.mobileNo = p.mobileNo
+where b.benefitID = @benifitID
+declare @cashback int
+set @cashback = @amount * 0.1 
+return @cashback
+END
+GO
+
+
+GO
+CREATE PROCEDURE dropAllTables
 AS
 
 DROP TABLE Customer_Profile
@@ -251,14 +251,57 @@ GO
 CREATE procedure dropAllProceduresFunctionsViews
 AS
 
+--2.1--
 DROP PROCEDURE createAllTables
 DROP PROCEDURE dropAllTables
 DROP PROCEDURE clearAllTables
+DROP FUNCTION getCashback
+
+--2.2--
+DROP VIEW allCustomerAccounts
+DROP VIEW allServicePlans
+DROP VIEW AllBenefits
+DROP VIEW AccountPayments
+DROP VIEW allShops
+DROP VIEW allResolvedTickets
+DROP VIEW CustomerWallet
+DROP VIEW E_shopVouchers
+DROP VIEW PhysicalStoreVouchers
+DROP VIEW Num_of_cashback
+
+--2.3--
+DROP PROCEDURE Account_Plan
+DROP FUNCTION Account_Plan_date
+DROP FUNCTION Account_Usage_Plan
+DROP PROCEDURE Benefits_Account
+DROP FUNCTION Account_SMS_Offers
+DROP PROCEDURE Account_Payment_Points
+DROP FUNCTION Wallet_Cashback_Amount
+DROP FUNCTION Wallet_Transfer_Amount
+DROP FUNCTION Wallet_MobileNo
+DROP PROCEDURE Total_Points_Account
+
+--2.4--
+DROP FUNCTION AccountLoginValidation
+DROP FUNCTION Consumption
+DROP PROCEDURE Unsubscribed_Plans
+DROP FUNCTION Usage_Plan_CurrentMonth
+DROP FUNCTION Cashback_Wallet_Customer
+DROP PROCEDURE Ticket_Account_Customer
+DROP PROCEDURE Account_Highest_Voucher
+DROP FUNCTION Remaining_plan_amount
+DROP FUNCTION Extra_plan_amount
+DROP PROCEDURE Top_Successfl_Payments
+DROP FUNCTION Subscribed_plans_5_Months
+DROP PROCEDURE Initiate_plan_payment
+DROP PROCEDURE Payment_wallet_chasback
+DROP PROCEDURE Initiate_balance_payment
+DROP PROCEDURE Redeem_voucher_points
 
 GO
 
 GO
-create procedure clearAllTables
+CREATE PROCEDURE clearAllTables
 AS
 
 TRUNCATE TABLE Customer_Profile
@@ -282,6 +325,76 @@ TRUNCATE TABLE Voucher
 TRUNCATE TABLE Technical_Support_Ticket
 
 GO
+
+----------2.2---------
+--E
+GO
+CREATE VIEW AllShops
+AS
+SELECT * FROM Shop
+GO
+
+--F
+GO
+CREATE VIEW allResolvedTickets
+AS
+SELECT * FROM Technical_Support_Ticket
+WHERE status = 'Resolved'
+GO
+
+----------2.3---------
+--E
+GO
+CREATE FUNCTION Account_SMS_Offers
+(@MobileNo char(11))
+returns Table
+AS
+return (
+SELECT a.mobileNo , e.SMS_offered
+FROM Customer_Account a 
+inner join Benefits b on a.mobileNo = b.mobileNo
+inner join Exclusive_Offer e on b.benefitID = e.benefitID
+WHERE a.mobileNo = @MobileNo)
+GO
+
+--F
+GO
+CREATE PROCEDURE Account_Payment_Points
+@MobileNo char(11),
+@Total_Transactions int OUTPUT,
+@Total_Amount int OUTPUT
+AS
+SELECT @Total_Transactions = count(*)
+FROM Customer_Account a 
+inner join Payment p on a.mobileNo = p.mobileNo 
+WHERE a.mobileNo = @MobileNo AND p.status = 'succesful'
+AND  DATEDIFF(year, '2021/08/25', GETDATE()) = 0
+
+SELECT @Total_amount = a.point 
+FROM Customer_Account a
+WHERE a.mobileNo = @MobileNo
+GO
+
+----------2.4---------
+--G
+CREATE PROCEDURE Account_Highest_Voucher
+@MobileNo char(11),
+@Voucher_id int OUTPUT
+AS
+SELECT @Voucher_id = v.voucherID 
+FROM Voucher v
+WHERE v.value = 
+(SELECT MAX(v1.value) 
+from Voucher v1 
+inner join Customer_Account a on v1.mobileNo = a.mobileNo 
+WHERE a.mobileNo = @MobileNo)
+
+
+
+
+
+
+
 
 
 
