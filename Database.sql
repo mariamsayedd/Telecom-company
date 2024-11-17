@@ -273,7 +273,7 @@ DROP PROCEDURE clearAllTables
 --2.2--
 DROP VIEW allCustomerAccounts
 DROP VIEW allServicePlans
-DROP VIEW AllBenefits
+DROP VIEW allBenefits
 DROP VIEW AccountPayments
 DROP VIEW allShops
 DROP VIEW allResolvedTickets
@@ -304,10 +304,10 @@ DROP PROCEDURE Ticket_Account_Customer
 DROP PROCEDURE Account_Highest_Voucher
 DROP FUNCTION Remaining_plan_amount
 DROP FUNCTION Extra_plan_amount
-DROP PROCEDURE Top_Successfl_Payments
+DROP PROCEDURE Top_Successful_Payments
 DROP FUNCTION Subscribed_plans_5_Months
 DROP PROCEDURE Initiate_plan_payment
-DROP PROCEDURE Payment_wallet_chasback
+DROP PROCEDURE Payment_wallet_cashback
 DROP PROCEDURE Initiate_balance_payment
 DROP PROCEDURE Redeem_voucher_points
 
@@ -323,13 +323,53 @@ GO
 EXEC clearAllTables
 
 ----------2.2---------
+
+--A
+GO 
+CREATE VIEW allCustomerAccounts
+AS
+SELECT P.nationalID AS Account_nationalID,P.first_name,P.last_name,P.email,P.address,P.date_of_birth,A.*
+FROM Customer_profile P
+INNER JOIN Customer_Account A
+ON P.nationalID=A.nationalID 
+WHERE A.status='active'
+GO
+
+--B
+GO 
+CREATE VIEW allServicePlans
+AS
+SELECT *
+FROM Service_Plan
+/*SELECT     
+    S.planID,
+    S.SMS_offered,
+    S.minutes_offered,
+    S.data_offered,
+    S.name,
+    S.price,
+    S.description,
+    PB.benefitID,
+    E.offerID,
+    E.internet_offered,
+    E.SMS_offered AS ExtraSMSOffered,
+    E.minutes_offered AS ExtraMinutesOffered 
+FROM Service_Plan S
+INNER JOIN Plan_Provides_Benefits PB
+ON S.planID=PB.planID
+INNER JOIN Exclusive_Offer E
+ON E.benefitID=PB.benefitID*/
+GO
+
+--need to change common column names for each col to be unique
+
 --E
 GO
-CREATE VIEW AllShops
+CREATE VIEW allShops
 AS
 SELECT * FROM Shop
 GO
-D
+
 --F
 GO
 CREATE VIEW allResolvedTickets
@@ -339,6 +379,35 @@ WHERE status = 'Resolved'
 GO
 
 ----------2.3---------
+--A
+GO
+CREATE PROCEDURE Account_Plan
+AS
+SELECT A.*,P.*
+FROM Customer_Account A
+INNER JOIN Subscription S
+ON A.mobileNo=S.mobileNo
+INNER JOIN Service_Plan P
+ON P.planID=S.planID
+GO
+--B
+GO
+CREATE FUNCTION Account_Plan_date
+(@Subscription_Date date,
+ @Plan_id int)
+RETURNS TABLE
+AS
+RETURN(
+SELECT A.mobileNo,P.planID,P.name
+FROM Customer_Account A
+INNER JOIN Subscription S
+ON A.mobileNo=S.mobileNo
+INNER JOIN Service_Plan P
+ON P.planID=S.planID
+WHERE P.planID=@Plan_id AND S.subscription_date=@Subscription_Date
+)
+GO
+
 --E
 GO
 CREATE FUNCTION Account_SMS_Offers
@@ -363,7 +432,7 @@ AS
 SELECT @Total_Transactions = count(*)
 FROM Customer_Account a 
 inner join Payment p on a.mobileNo = p.mobileNo 
-WHERE a.mobileNo = @MobileNo AND p.status = 'succesful'
+WHERE a.mobileNo = @MobileNo AND p.status = 'successful'
 AND  DATEDIFF(year, p.date_of_payment, GETDATE()) = 0
 
 SELECT @Total_amount = a.point 
@@ -372,6 +441,50 @@ WHERE a.mobileNo = @MobileNo
 GO
 
 ----------2.4---------
+--A
+GO
+CREATE FUNCTION AccountLoginValidation
+(@MobileNo char(11), @password varchar(50))
+RETURNS BIT
+AS
+BEGIN
+ declare @successBit bit
+ IF EXISTS 
+  (SELECT * FROM Customer_Account WHERE mobileNo=@MobileNo AND pass=@password)
+   SET @successBit=1
+ ELSE
+   SET @successBit=0
+RETURN @successBit
+END
+GO
+--B
+GO
+CREATE FUNCTION Consumption
+(@Plan_name varchar(50),@start_date date,@end_date date)
+RETURNS TABLE
+AS
+RETURN (
+SELECT sum(P.SMS_sent)AS TotalSMSSent,sum(P.minutes_used) AS TotalMinutesUsed, sum(P.data_consumption) AS TotalDataConsumption
+FROM Plan_Usage P
+INNER JOIN Service_Plan S
+ON P.planID=S.planID
+WHERE S.name= @Plan_name AND P.start_date>=@start_date AND P.end_date<=@end_date
+)
+GO
+
+--total of each?
+--C
+GO
+CREATE PROCEDURE Unsubscribed_Plans
+@MobileNo char(11)
+AS
+SELECT P.*
+FROM Service_Plan P
+LEFT OUTER JOIN Subscription S
+ON P.planID=S.planID AND  S.mobileNo=@MobileNo
+WHERE S.planID IS NULL
+GO
+--offered service plan so should i join with exclusive offers?
 --G
 GO
 CREATE PROCEDURE Account_Highest_Voucher
@@ -430,16 +543,3 @@ END
 RETURN @Extra_amount
 END
 GO
-
-
-
-
-
-
-
-
-
-
-
-
-
