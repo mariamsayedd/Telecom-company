@@ -1,16 +1,18 @@
-﻿drop database temp
+﻿drop database Telecom_Team_12
 ----------2.1---------
+--A
 create database Telecom_Team_12
 
 GO
 
 Use Telecom_Team_12
 
+--B
 GO
 CREATE PROCEDURE createAllTables
 AS
 
-CREATE TABLE Customer_Profile (
+CREATE TABLE Customer_profile (
     nationalID int NOT NULL PRIMARY KEY ,
     first_name Varchar(50),
     last_name Varchar(50),
@@ -27,13 +29,13 @@ Create table Customer_Account (
     status Varchar(50), 
     point int DEFAULT 0, 
     nationalID int ,
-    FOREIGN KEY (nationalID) REFERENCES Customer_Profile,
-    check(account_type in ('Post Paid', 'Prepaid', 'Pay_as_you_go')),
-    check(status in ('active', 'onhold'))
+    CONSTRAINT FK_Customer_Account FOREIGN KEY (nationalID) REFERENCES Customer_profile,
+    CHECK(account_type in ('Post Paid', 'Prepaid', 'Pay_as_you_go')),
+    CHECK(status in ('active', 'onhold'))
 )
     
 CREATE TABLE Service_Plan (
-    planID int PRIMARY KEY identity(1,1),
+    planID int PRIMARY KEY IDENTITY(1,1),
     SMS_offered int,
     minutes_offered int,
     data_offered int,
@@ -48,13 +50,13 @@ Create table Subscription (
     subscription_date date,
     status Varchar(50),
     PRIMARY KEY (mobileNo, planID),
-    FOREIGN KEY (mobileNo) REFERENCES Customer_Account,
-    FOREIGN KEY (planID) REFERENCES Service_Plan,
-    check(status in ('active', 'onhold')),
+    CONSTRAINT FK_Subscription1 FOREIGN KEY (mobileNo) REFERENCES Customer_Account,
+    CONSTRAINT FK_Subscription2 FOREIGN KEY (planID) REFERENCES Service_Plan,
+    CHECK(status in ('active', 'onhold')),
 )
 
 CREATE TABLE Plan_Usage (
-    usageID int primary key identity(1,1),
+    usageID int PRIMARY KEY IDENTITY(1,1),
     start_date date,
     end_date date,
     data_consumption int,
@@ -62,191 +64,203 @@ CREATE TABLE Plan_Usage (
     SMS_sent int, 
     mobileNo char(11),
     planID int,
-    foreign key(mobile_number) references Customer_Account,
-    foreign key(planID) references Service_Plan
+    CONSTRAINT FK_Plan_Usage1 FOREIGN KEY(mobileNo) references Customer_Account,
+    CONSTRAINT FK_Plan_Usage2 FOREIGN KEY(planID) references Service_Plan
 )
 
 CREATE TABLE Payment(
-    paymentID int primary key identity(1,1),
+    paymentID int PRIMARY KEY IDENTITY(1,1),
     amount decimal (10,1), 
     date_of_payment date, 
     payment_method Varchar(50), 
     status Varchar(50), 
     mobileNo char(11),
-    foreign key(mobileNo) references Customer_Account,
-    check(status in ('successful', 'pending', 'rejected')),
-    check(payment_method in ('cash', 'credit'))
+    CONSTRAINT FK_Payment FOREIGN KEY(mobileNo) references Customer_Account,
+    CHECK(status in ('successful', 'pending', 'rejected')),
+    CHECK(payment_method in ('cash', 'credit'))
 )
 
 CREATE TABLE Process_Payment (
-    paymentID int primary key identity(1,1),
+    paymentID int PRIMARY KEY IDENTITY(1,1),
     planID int,
     remaining_balance int, 
     extra_amount int,
-    foreign key(paymentID) references Payment,
-    foreign key(planID) references Service_Plan,
+    CONSTRAINT FK_Process_Payment1 FOREIGN KEY(paymentID) references Payment,
+    CONSTRAINT FK_Process_Payment2 FOREIGN KEY(planID) references Service_Plan,
 )
 
 CREATE TABLE Wallet (
-    walletID int primary key identity(1,1), 
+    walletID int PRIMARY KEY IDENTITY(1,1), 
     current_balance decimal(10,2),
     currency Varchar(50), 
     last_modified_date date, 
     nationalID int, 
     mobileNo char(11),
-    foreign key(nationalID) references Customer_Profile
+    CONSTRAINT FK_Wallet FOREIGN KEY(nationalID) references Customer_profile
 )
 
 CREATE TABLE Transfer_money(
     walletID1 int,
     walletID2 int,
-    transfer_id int identity(1,1),
+    transfer_id int IDENTITY(1,1),
     amount decimal(10,2),
     transfer_date date,
-    primary key (walletID1,walletID2,transfer_id),
-    foreign key (walletID1,walletID2) references Wallet
+    PRIMARY KEY (walletID1,walletID2,transfer_id),
+    CONSTRAINT FK_Transfer_money1 FOREIGN KEY (walletID1) references Wallet(walletID),
+    CONSTRAINT FK_Transfer_money2 FOREIGN KEY (walletID2) references Wallet(walletID)
 )
 
 CREATE TABLE Benefits(
-    benefitID int primary key identity(1,1), 
+    benefitID int PRIMARY KEY IDENTITY(1,1), 
     description Varchar(50), 
     validity_date date, 
     status Varchar(50),
     mobileNo char(11),
-    foreign key (mobileNo) references Customer_Account,
-    check(status in ('active','expired'))
+    CONSTRAINT FK_Benefits FOREIGN KEY (mobileNo) references Customer_Account,
+    CHECK(status in ('active','expired'))
 )
 
 CREATE TABLE Points_Group(
-    pointID int identity(1,1), 
+    pointID int IDENTITY(1,1), 
     benefitID int, 
     pointsAmount int, 
     PaymentID int,
-    primary key (pointID , benefitID),
-    foreign key (benefitID) references Benefits,
-    foreign key (PaymentID) references Payment
+    PRIMARY KEY (pointID , benefitID),
+    CONSTRAINT FK_Points_Group1 FOREIGN KEY (benefitID) references Benefits,
+    CONSTRAINT FK_Points_Group2 FOREIGN KEY (PaymentID) references Payment
 )
 
 CREATE TABLE Exclusive_Offer(
-    offerID int identity(1,1), 
+    offerID int IDENTITY(1,1), 
     benefitID int, 
     internet_offered int, 
     SMS_offered int,
     minutes_offered int,
-    primary key (offerID, benefitID),
-    foreign key (benefitID) references Benefits
+    PRIMARY KEY (offerID, benefitID),
+    CONSTRAINT FK_Exclusive_Offer FOREIGN KEY (benefitID) references Benefits
 )
 
 CREATE TABLE Cashback (
-    CashbackID int identity(1,1),
+    CashbackID int IDENTITY(1,1),
     benefitID int, 
     walletID int, 
-    amount int DEFAULT(dbo.getCashback(benefitID)),
+    amount int, --DEFAULT(dbo.getCashback(benefitID)),
     credit_date date,
-    primary key (CashbackID, benefitID),
-    foreign key (benefitID) references Benefits,
-    foreign key (walletID) references Wallet
+    PRIMARY KEY (CashbackID, benefitID),
+    CONSTRAINT FK_Cashback1 FOREIGN KEY (benefitID) references Benefits,
+    CONSTRAINT FK_Cashback2 FOREIGN KEY (walletID) references Wallet
 )
 
 CREATE TABLE Plan_Provides_Benefits (
     benefitID int, 
     planID int,
-    primary key (benefitID, planID),
-    foreign key (benefitID) references Benefits,
-    foreign key (planID) references Service_Plan
+    PRIMARY KEY (benefitID, planID),
+    CONSTRAINT FK_Plan_Provides_Benefits1 FOREIGN KEY (benefitID) references Benefits,
+    CONSTRAINT FK_Plan_Provides_Benefits2 FOREIGN KEY (planID) references Service_Plan
 )
 
 CREATE TABLE Shop (
-    shopID int primary key identity(1,1), 
+    shopID int PRIMARY KEY IDENTITY(1,1), 
     name varchar(50), 
     category varchar(50)
 )
 
 CREATE TABLE Physical_Shop (
-    shopID int primary key, 
+    shopID int PRIMARY KEY, 
     address varchar(50), 
     working_hours varchar(50),
-    foreign key (shopID) references Shop
+    CONSTRAINT FK_Physical_Shop FOREIGN KEY (shopID) references Shop
 )
 
 CREATE TABLE E_shop (
-    shopID int primary key, 
+    shopID int PRIMARY KEY, 
     URL varchar(50),
     rating int,
-    foreign key (shopID) references Shop
+    CONSTRAINT FK_E_shop FOREIGN KEY (shopID) references Shop
 )
 
 CREATE TABLE Voucher(
-    voucherID int primary key identity(1,1),
+    voucherID int PRIMARY KEY IDENTITY(1,1),
     value int, 
     expiry_date date,
     points int, 
     mobileNo char(11), 
     shopID int,
     redeem_date date,
-    foreign key (mobileNo) references Customer_Account,
-    foreign key(shopID) references Shop
+    CONSTRAINT FK_Voucher1 FOREIGN KEY (mobileNo) references Customer_Account,
+    CONSTRAINT FK_Voucher2 FOREIGN KEY(shopID) references Shop
 )
 
 CREATE TABLE Technical_Support_Ticket(
-    ticketID int identity(1,1),
+    ticketID int IDENTITY(1,1),
     mobileNo char(11), 
     Issue_description Varchar(50),
     priority_level int,
     status Varchar(50),
-    primary key (ticketID , mobileNo),
-    foreign key (mobileNo) references Customer_Account,
-    check (status in ('Open','In Progress','Resolved'))
+    PRIMARY KEY (ticketID , mobileNo),
+    CONSTRAINT FK_Technical_Support_Ticket FOREIGN KEY (mobileNo) references Customer_Account,
+    CHECK (status in ('Open','In Progress','Resolved'))
 )
-
 GO
-
-GO
-create function getCashback
-(@benifitID int)
-returns int 
-as
-BEGIN
-
-declare @amount int 
-select @amount = p.amount 
-from Benefit b
-inner join customer_account acc on b.mobileNo = acc.mobileNo 
-inner join payment p on acc.mobileNo = p.mobileNo
-where b.benefitID = @benifitID
-declare @cashback int
-set @cashback = @amount * 0.1 
-return @cashback
-END
-GO
+EXEC createAllTables
 
 
+--C
 GO
 CREATE PROCEDURE dropAllTables
 AS
+    --Dropping foreign key constraints--
 
-DROP TABLE Customer_Profile
-DROP TABLE Customer_Account
-DROP TABLE Service_Plan
-DROP TABLE Subscription
-DROP TABLE Plan_Usage
-DROP TABLE Payment
-DROP TABLE Process_Payment
-DROP TABLE Wallet
-DROP TABLE Transfer_money
-DROP TABLE Benefits
-DROP TABLE Points_Group
-DROP TABLE Exclusive_Offer
-DROP TABLE Cashback
-DROP TABLE Plan_Provides_Benefits
-DROP TABLE Shop
-DROP TABLE Physical_Shop
-DROP TABLE E_shop
-DROP TABLE Voucher
-DROP TABLE Technical_Support_Ticket
+    ALTER TABLE Customer_Account DROP CONSTRAINT FK_Customer_Account
+    ALTER TABLE Subscription DROP CONSTRAINT FK_Subscription1
+    ALTER TABLE Subscription DROP CONSTRAINT FK_Subscription2
+    ALTER TABLE Plan_Usage DROP CONSTRAINT FK_Plan_Usage1
+    ALTER TABLE Plan_Usage DROP CONSTRAINT FK_Plan_Usage2
+    ALTER TABLE Payment DROP CONSTRAINT FK_Payment
+    ALTER TABLE Process_Payment DROP CONSTRAINT FK_Process_Payment1
+    ALTER TABLE Process_Payment DROP CONSTRAINT FK_Process_Payment2
+    ALTER TABLE Wallet DROP CONSTRAINT FK_Wallet
+    ALTER TABLE Transfer_money DROP CONSTRAINT FK_Transfer_money1
+    ALTER TABLE Transfer_money DROP CONSTRAINT FK_Transfer_money2
+    ALTER TABLE Benefits DROP CONSTRAINT FK_Benefits;
+    ALTER TABLE Points_Group DROP CONSTRAINT FK_Points_Group1
+    ALTER TABLE Points_Group DROP CONSTRAINT FK_Points_Group2
+    ALTER TABLE Exclusive_Offer DROP CONSTRAINT FK_Exclusive_Offer
+    ALTER TABLE Cashback DROP CONSTRAINT FK_Cashback1
+    ALTER TABLE Cashback DROP CONSTRAINT FK_Cashback2
+    ALTER TABLE Plan_Provides_Benefits DROP CONSTRAINT FK_Plan_Provides_Benefits1
+    ALTER TABLE Plan_Provides_Benefits DROP CONSTRAINT FK_Plan_Provides_Benefits2
+    ALTER TABLE Physical_Shop DROP CONSTRAINT FK_Physical_Shop
+    ALTER TABLE E_shop DROP CONSTRAINT FK_E_shop
+    ALTER TABLE Voucher DROP CONSTRAINT FK_Voucher1
+    ALTER TABLE Voucher DROP CONSTRAINT FK_Voucher2
+    ALTER TABLE Technical_Support_Ticket DROP CONSTRAINT FK_Technical_Support_Ticket
+
+    --Dropping the tables--
+    DROP TABLE Customer_profile
+    DROP TABLE Customer_Account
+    DROP TABLE Service_Plan
+    DROP TABLE Subscription
+    DROP TABLE Plan_Usage
+    DROP TABLE Payment
+    DROP TABLE Process_Payment
+    DROP TABLE Wallet
+    DROP TABLE Transfer_money
+    DROP TABLE Benefits
+    DROP TABLE Points_Group
+    DROP TABLE Exclusive_Offer
+    DROP TABLE Cashback
+    DROP TABLE Plan_Provides_Benefits
+    DROP TABLE Shop
+    DROP TABLE Physical_Shop
+    DROP TABLE E_shop
+    DROP TABLE Voucher
+    DROP TABLE Technical_Support_Ticket
 
 GO
+EXEC dropAllTables
 
+--D
 GO
 CREATE procedure dropAllProceduresFunctionsViews
 AS
@@ -255,7 +269,6 @@ AS
 DROP PROCEDURE createAllTables
 DROP PROCEDURE dropAllTables
 DROP PROCEDURE clearAllTables
-DROP FUNCTION getCashback
 
 --2.2--
 DROP VIEW allCustomerAccounts
@@ -300,31 +313,14 @@ DROP PROCEDURE Redeem_voucher_points
 
 GO
 
+--E
 GO
 CREATE PROCEDURE clearAllTables
 AS
-
-TRUNCATE TABLE Customer_Profile
-TRUNCATE TABLE Customer_Account
-TRUNCATE TABLE Service_Plan
-TRUNCATE TABLE Subscription
-TRUNCATE TABLE Plan_Usage
-TRUNCATE TABLE Payment
-TRUNCATE TABLE Process_Payment
-TRUNCATE TABLE Wallet
-TRUNCATE TABLE Transfer_money
-TRUNCATE TABLE Benefits
-TRUNCATE TABLE Points_Group
-TRUNCATE TABLE Exclusive_Offer
-TRUNCATE TABLE Cashback
-TRUNCATE TABLE Plan_Provides_Benefits
-TRUNCATE TABLE Shop
-TRUNCATE TABLE Physical_Shop
-TRUNCATE TABLE E_shop
-TRUNCATE TABLE Voucher
-TRUNCATE TABLE Technical_Support_Ticket
-
+    EXEC dropAllTables
+    EXEC createAllTables
 GO
+EXEC clearAllTables
 
 ----------2.2---------
 --E
@@ -333,7 +329,7 @@ CREATE VIEW AllShops
 AS
 SELECT * FROM Shop
 GO
-
+D
 --F
 GO
 CREATE VIEW allResolvedTickets
@@ -347,9 +343,9 @@ GO
 GO
 CREATE FUNCTION Account_SMS_Offers
 (@MobileNo char(11))
-returns Table
+RETURNS Table
 AS
-return (
+RETURN (
 SELECT a.mobileNo , e.SMS_offered
 FROM Customer_Account a 
 inner join Benefits b on a.mobileNo = b.mobileNo
@@ -368,7 +364,7 @@ SELECT @Total_Transactions = count(*)
 FROM Customer_Account a 
 inner join Payment p on a.mobileNo = p.mobileNo 
 WHERE a.mobileNo = @MobileNo AND p.status = 'succesful'
-AND  DATEDIFF(year, '2021/08/25', GETDATE()) = 0
+AND  DATEDIFF(year, p.date_of_payment, GETDATE()) = 0
 
 SELECT @Total_amount = a.point 
 FROM Customer_Account a
@@ -377,6 +373,7 @@ GO
 
 ----------2.4---------
 --G
+GO
 CREATE PROCEDURE Account_Highest_Voucher
 @MobileNo char(11),
 @Voucher_id int OUTPUT
@@ -388,6 +385,54 @@ WHERE v.value =
 from Voucher v1 
 inner join Customer_Account a on v1.mobileNo = a.mobileNo 
 WHERE a.mobileNo = @MobileNo)
+GO
+
+--H
+GO
+CREATE FUNCTION Remaining_plan_amount
+(@MobileNo char(11),@plan_name varchar(50))
+RETURNS INT
+AS
+BEGIN
+DECLARE @Remaining_amount INT
+SET @Remaining_amount =       
+CASE 
+    WHEN 
+        (SELECT p.amount FROM Payment p , Process_Payment pp WHERE p.paymentID = pp.paymentID) < 
+        (SELECT price FROM Service_Plan WHERE Service_Plan.name = @plan_name)
+    THEN 
+        (SELECT price FROM Service_Plan WHERE Service_Plan.name = @plan_name) - 
+        (SELECT p.amount FROM Payment p , Process_Payment pp WHERE p.paymentID = pp.paymentID)
+    ELSE 0
+END
+RETURN @Remaining_amount
+END
+GO
+
+--I
+GO
+CREATE FUNCTION Extra_plan_amount
+(@MobileNo char(11),@plan_name varchar(50))
+RETURNS INT
+AS
+BEGIN
+DECLARE @Extra_amount INT
+SET @Extra_amount =       
+CASE 
+    WHEN 
+        (SELECT p.amount FROM Payment p , Process_Payment pp WHERE p.paymentID = pp.paymentID) > 
+        (SELECT price FROM Service_Plan WHERE Service_Plan.name = @plan_name)
+    THEN 
+        (SELECT p.amount FROM Payment p , Process_Payment pp WHERE p.paymentID = pp.paymentID) -
+        (SELECT price FROM Service_Plan WHERE Service_Plan.name = @plan_name)
+    ELSE 0
+END
+RETURN @Extra_amount
+END
+GO
+
+
+
 
 
 
