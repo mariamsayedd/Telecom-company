@@ -468,6 +468,29 @@ FROM Customer_Account a
 WHERE a.mobileNo = @MobileNo
 GO
 
+-- I
+go
+create FUNCTION Wallet_MobileNo(
+@MobileNo char(11))
+returns bit
+AS
+BEGIN
+declare @answer BIT
+
+if exists(
+    select *
+    from Wallet w, Customer_Account ca
+    where ca.MobileNo = @MobileNo and ca.nationalID = w.nationalID )
+    set @answer = 1
+else set @answer =0
+
+return @answer
+end
+go
+
+
+
+
 ----------2.4---------
 --A
 GO
