@@ -490,8 +490,21 @@ go
 
 
 --J
+go
+create proc Total_Points_Account
+@MobileNo char(11),
+@allPoints int output
+AS
 
+select @allPoints = sum(p.pointsAmount)
+from Benefits b, Points_Group p
+where b.mobileNo = @MobileNo and b.benefit_id = p.benefit_id
 
+update Customer_Account
+set points = @allPoints
+where @MobileNo = mobileNo
+
+go
 ----------2.4---------
 --A
 GO
