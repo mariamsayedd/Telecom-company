@@ -464,9 +464,11 @@ CREATE FUNCTION Account_Usage_Plan
 RETURNS Table
 AS
 RETURN (
-SELECT p.planID, p.data_consumption, p.minutes_used, p.SMS_sent
-FROM Plan_Usage p
-WHERE p.mobileNo=@MobileNo AND p.start_date=@from_date)
+SELECT s.planID, sum(p.data_consumption) AS totalData, sum(p.minutes_used) AS totalMinutes, sum(p.SMS_sent) AS totalSMS
+FROM Plan_Usage p INNER JOIN Subscription s
+ON p.planID=s.planID AND p.mobileNo=s.mobileNo
+WHERE p.mobileNo=@MobileNo AND p.start_date>=@from_date
+GROUP BY s.planID)
 GO
 
 --D
