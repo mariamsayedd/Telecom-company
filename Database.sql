@@ -328,7 +328,19 @@ EXEC clearAllTables
 GO 
 CREATE VIEW allCustomerAccounts
 AS
-SELECT P.nationalID AS Account_nationalID,P.first_name,P.last_name,P.email,P.address,P.date_of_birth,A.*
+SELECT P.nationalID,
+       P.first_name,
+       P.last_name,
+       P.email,
+       P.address,
+       P.date_of_birth,
+       A.mobileNo,
+       A.pass,
+       A.balance,
+       A.account_type,
+       A.start_date,
+       A.status,
+       A.point
 FROM Customer_profile P
 INNER JOIN Customer_Account A
 ON P.nationalID=A.nationalID 
@@ -341,27 +353,7 @@ CREATE VIEW allServicePlans
 AS
 SELECT *
 FROM Service_Plan
-/*SELECT     
-    S.planID,
-    S.SMS_offered,
-    S.minutes_offered,
-    S.data_offered,
-    S.name,
-    S.price,
-    S.description,
-    PB.benefitID,
-    E.offerID,
-    E.internet_offered,
-    E.SMS_offered AS ExtraSMSOffered,
-    E.minutes_offered AS ExtraMinutesOffered 
-FROM Service_Plan S
-INNER JOIN Plan_Provides_Benefits PB
-ON S.planID=PB.planID
-INNER JOIN Exclusive_Offer E
-ON E.benefitID=PB.benefitID*/
 GO
-
---need to change common column names for each col to be unique
 
 --E
 GO
@@ -390,6 +382,7 @@ ON A.mobileNo=S.mobileNo
 INNER JOIN Service_Plan P
 ON P.planID=S.planID
 GO
+
 --B
 GO
 CREATE FUNCTION Account_Plan_date
@@ -472,7 +465,7 @@ WHERE S.name= @Plan_name AND P.start_date>=@start_date AND P.end_date<=@end_date
 )
 GO
 
---total of each?
+
 --C
 GO
 CREATE PROCEDURE Unsubscribed_Plans
@@ -483,8 +476,6 @@ FROM Service_Plan P
 LEFT OUTER JOIN Subscription S
 ON P.planID=S.planID AND  S.mobileNo=@MobileNo
 WHERE S.planID IS NULL
-GO
---offered service plan so should i join with exclusive offers?
 --G
 GO
 CREATE PROCEDURE Account_Highest_Voucher
