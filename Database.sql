@@ -660,7 +660,8 @@ create proc Initiate_balance_payment
 @amount decimal(10,1),
 @payment_method varchar(50)
 AS
-insert into Payment VALUES(@amount , GETDATE() , @payment_method , 'Accepted', @MobileNo)
+insert into Payment(amount, date_of_payment, payment_method, status,MobileNo )
+     VALUES(@amount , GETDATE() , @payment_method , 'Accepted', @MobileNo)
 
 go
 
@@ -679,7 +680,7 @@ where Voucher.voucherID = @voucher_id
 
 select @AccountPoints =  Customer_Account.point
 from Customer_Account
-where Customer_Account.MobileNo = @voucher_id
+where Customer_Account.MobileNo = @MobileNo
 
 
 update Customer_Account
