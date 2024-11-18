@@ -597,6 +597,17 @@ END
 GO
 
 
+--n
+go
+create proc Initiate_balance_payment
+@MobileNo char(11) ,
+@amount decimal(10,1),
+@payment_method varchar(50)
+AS
+insert into Payment VALUES(@amount , GETDATE() , @payment_method , 'Accepted', @MobileNo)
+
+go
+
 --O
 go
 create proc Redeem_voucher_points
