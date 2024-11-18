@@ -610,6 +610,21 @@ END
 GO
 
 
+
+-- --L
+
+-- go
+-- create proc Initiate_plan_payment
+-- @MobileNo char(11) ,
+-- @amount decimal(10,1),
+-- @payment_method varchar(50),
+-- @plan_id int
+-- as
+
+
+-- go
+
+
 --M
 -- Cashback is calculated as 10% of the payment amount.
 
@@ -648,8 +663,7 @@ if exists (Select *
 
     end
 else 
-        insert into Cashback (benefit_id , walletID, amount, credit_date ) Values (@benefit_id, @walletID, 0, GETDATE() )
-
+    print "Error"-- I have no Idea what to do in the else here 
 
 go
 
