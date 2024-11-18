@@ -378,6 +378,34 @@ SELECT * FROM Technical_Support_Ticket
 WHERE status = 'Resolved'
 GO
 
+
+--H
+go
+create view E_shopVouchers
+as
+select E_shop.shopID, Voucher.voucherID, Voucher.value  
+from E_shop left outer join Voucher on(E_shop.shopID = Voucher.shopID)
+go
+
+--I
+go
+create view PhysicalStoreVouchers
+as
+select Physical_Shop.shopID ,Voucher.voucherID ,Voucher.value  
+from Physical_Shop left outer join Voucher on(Physical_Shop.shopID = Voucher.shopID)
+go
+
+
+--J
+
+go
+create view Num_of_cashback
+AS
+select Cashback.walletID,  count(*) as Count
+from Cashback 
+group by walletID
+go
+
 ----------2.3---------
 --A
 GO
