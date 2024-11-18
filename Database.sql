@@ -648,7 +648,8 @@ if exists (Select *
 
     end
 else 
-    WAITFOR DELAY '00:00:00'
+        insert into Cashback (benefit_id , walletID, amount, credit_date ) Values (@benefit_id, @walletID, 0, GETDATE() )
+
 
 go
 
