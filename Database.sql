@@ -597,6 +597,48 @@ END
 GO
 
 
+--M
+-- Cashback is calculated as 10% of the payment amount.
+
+go 
+create proc Payment_wallet_cashback
+@MobileNo char(11),
+@payment_id int,
+@benefit_id int
+as
+
+if exists (Select *
+    from Benefits b
+    where b.mobileNo = @MobileNo and b.benefit_id = @benefit_id and b.validity_date >=  GETDATE())
+
+    begin
+
+    declare @paymentAmount int
+    declare @walletID int
+
+    select @paymentAmount = Payment.amount
+    from Payment
+    where Payment.paymentID = @payment_id
+
+
+    select @walletID = Wallet.walletID
+    from Customer_Account, Wallet 
+    where Customer_Account.mobileNo = @MobileNo and Wallet.nationalID = Customer_Account.nationalID
+
+
+    insert into Cashback (benefit_id , walletID, amount, credit_date ) Values (@benefit_id, @walletID, 0.1*@paymentAmount, GETDATE() )
+    
+    update Wallet
+    set current_balance =   current_balance + 0.1*(@paymentAmount) 
+    where walletID = @walletID 
+
+
+    end
+else 
+    WAITFOR DELAY '00:00:00'
+
+go
+
 --n
 go
 create proc Initiate_balance_payment
