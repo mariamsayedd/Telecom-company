@@ -418,7 +418,6 @@ from Physical_Shop left outer join Voucher on(Physical_Shop.shopID = Voucher.sho
 go
 
 --J
-
 go
 create view Num_of_cashback
 AS
