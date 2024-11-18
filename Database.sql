@@ -489,6 +489,7 @@ end
 go
 
 
+--J
 
 
 ----------2.4---------
@@ -594,3 +595,30 @@ END
 RETURN @Extra_amount
 END
 GO
+
+
+--O
+go
+create proc Redeem_voucher_points
+@MobileNo char(11), @voucher_id int
+AS
+declare @VoucherPoints INT
+declare @AccountPoints Int
+
+select @VoucherPoints =  voucher.points
+from Voucher 
+where Voucher.voucherID = @voucher_id
+
+
+select @AccountPoints =  Customer_Account.point
+from Customer_Account
+where Customer_Account.MobileNo = @voucher_id
+
+
+update Customer_Account
+set point = @AccountPoints + @VoucherPoints
+where mobileNo = @MobileNo
+go
+
+
+
