@@ -401,7 +401,7 @@ go
 go
 create view Num_of_cashback
 AS
-select Cashback.walletID,  count(*) as Count
+select Cashback.walletID,  count(*) as Count_of_Cashbacks
 from Cashback 
 group by walletID
 go
