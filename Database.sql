@@ -611,18 +611,48 @@ GO
 
 
 
--- --L
+--L
 
--- go
--- create proc Initiate_plan_payment
--- @MobileNo char(11) ,
--- @amount decimal(10,1),
--- @payment_method varchar(50),
--- @plan_id int
--- as
+go
+create proc Initiate_plan_payment
+@MobileNo char(11) ,
+@amount decimal(10,1),
+@payment_method varchar(50),
+@plan_id int
+as
+
+-- in the description of the procedure it is mentioned that the payment is accepted so i guess we should not look at whether the payment is suffecient or not and straight away update and insert the values
+
+insert into Payment (amount, date_of_payment, payment_method, status, mobileNo) Values(@amount, GETDATE(), @payment_method, 'successful', @MobileNo )
+
+update Subscription 
+set status = 'active' 
+where mobileNo = @MobileNo and planID = @plan_id
+
+go
 
 
--- go
+-- paymentID int PRIMARY KEY IDENTITY(1,1),
+--     amount decimal (10,1), 
+--     date_of_payment date, 
+--     payment_method Varchar(50), 
+--     status Varchar(50), 
+--     mobileNo char(11),
+--     CONSTRAINT FK_Payment FOREIGN KEY(mobileNo) references Customer_Account,
+--     CHECK(status in ('successful', 'pending', 'rejected')),
+--     CHECK(payment_method in ('cash', 'credit'))
+
+
+-- Create table Subscription (
+--     mobileNo char(11) NOT NULL, 
+--     planID int ,
+--     subscription_date date,
+--     status Varchar(50),
+--     PRIMARY KEY (mobileNo, planID),
+--     CONSTRAINT FK_Subscription1 FOREIGN KEY (mobileNo) REFERENCES Customer_Account,
+--     CONSTRAINT FK_Subscription2 FOREIGN KEY (planID) REFERENCES Service_Plan,
+--     CHECK(status in ('active', 'onhold')),
+-- )
 
 
 --M
