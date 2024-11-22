@@ -1,5 +1,4 @@
 ﻿
-﻿drop database Telecom_Team_12
 ----------2.1---------
 --A
 CREATE database Telecom_Team_12
@@ -81,44 +80,6 @@ CREATE TABLE Payment(
     CHECK(status in ('successful', 'pending', 'rejected')),
     CHECK(payment_method in ('cash', 'credit'))
 )
-
-GO
-CREATE FUNCTION Remaining_plan_amount_helper(
-@PaymentID int,
-@PlanID int)
-RETURNS decimal(10,2)
-AS
-BEGIN
-DECLARE @MobileNo char(11)
-DECLARE @Plan_name varchar(50)
-DECLARE @Remaining_balance decimal(10,2)
-
-SET @MobileNo = (SELECT mobileNo FROM Payment Where Payment.paymentID = @PaymentID)
-SET @Plan_name = (SELECT name FROM Service_Plan WHERE Service_Plan.planID = @PlanID)
-SET @Remaining_balance = dbo.Remaining_plan_amount(@MobileNo,@Plan_name)
-
-RETURN @Remaining_balance
-END
-GO
-
-GO
-CREATE FUNCTION Extra_plan_amount_helper(
-@PaymentID int,
-@PlanID int)
-RETURNS decimal(10,2)
-AS
-BEGIN
-DECLARE @MobileNo char(11)
-DECLARE @Plan_name varchar(50)
-DECLARE @Extra_amount decimal(10,2)
-
-SET @MobileNo = (SELECT mobileNo FROM Payment Where Payment.paymentID = @PaymentID)
-SET @Plan_name = (SELECT name FROM Service_Plan WHERE Service_Plan.planID = @PlanID)
-SET @Extra_amount = dbo.Extra_plan_amount(@MobileNo,@Plan_name)
-
-RETURN @Extra_amount
-END
-GO
 
 CREATE TABLE Process_Payment (
     paymentID int PRIMARY KEY,
@@ -241,10 +202,46 @@ CREATE TABLE Technical_Support_Ticket(
     PRIMARY KEY (ticketID , mobileNo),
     CONSTRAINT FK_Technical_Support_Ticket FOREIGN KEY (mobileNo) references Customer_Account,
     CHECK (status in ('Open','In Progress','Resolved'))
+
 )
 GO
-EXEC createAllTables
+    CREATE FUNCTION Remaining_plan_amount_helper(
+    @PaymentID int,
+    @PlanID int)
+    RETURNS decimal(10,2)
+    AS
+    BEGIN
+    DECLARE @MobileNo char(11)
+    DECLARE @Plan_name varchar(50)
+    DECLARE @Remaining_balance decimal(10,2)
 
+    SET @MobileNo = (SELECT mobileNo FROM Payment Where Payment.paymentID = @PaymentID)
+    SET @Plan_name = (SELECT name FROM Service_Plan WHERE Service_Plan.planID = @PlanID)
+    SET @Remaining_balance = dbo.Remaining_plan_amount(@MobileNo,@Plan_name)
+
+    RETURN @Remaining_balance
+    END
+    GO
+
+    GO
+    CREATE FUNCTION Extra_plan_amount_helper(
+    @PaymentID int,
+    @PlanID int)
+    RETURNS decimal(10,2)
+    AS
+    BEGIN
+    DECLARE @MobileNo char(11)
+    DECLARE @Plan_name varchar(50)
+    DECLARE @Extra_amount decimal(10,2)
+
+    SET @MobileNo = (SELECT mobileNo FROM Payment Where Payment.paymentID = @PaymentID)
+    SET @Plan_name = (SELECT name FROM Service_Plan WHERE Service_Plan.planID = @PlanID)
+    SET @Extra_amount = dbo.Extra_plan_amount(@MobileNo,@Plan_name)
+
+    RETURN @Extra_amount
+    END
+    GO
+GO
 
 --C
 GO
@@ -299,7 +296,6 @@ AS
     DROP TABLE Technical_Support_Ticket
 
 GO
-EXEC dropAllTables
 
 --D
 GO
@@ -363,7 +359,6 @@ AS
     EXEC dropAllTables
     EXEC createAllTables
 GO
-EXEC clearAllTables
 
 ----------2.2---------
 --A
@@ -447,7 +442,7 @@ GO
 GO
 CREATE VIEW CustomerWallet
 AS
-SELECT Wallet.* , Customer_profile.name 
+SELECT Wallet.* , Customer_profile.first_name , Customer_profile.last_name
 FROM Wallet , Customer_profile
 WHERE Wallet.nationalID = Customer_profile.nationalID
 GO
@@ -581,7 +576,7 @@ RETURNS int
 AS
 BEGIN 
 RETURN (SELECT sum(cb.amount) FROM Cashback AS cb 
-INNER JOIN Plan_Provides_Benefits AS ppb ON cb.benefit_id = ppb.benefit_id 
+INNER JOIN Plan_Provides_Benefits AS ppb ON cb.benefitID = ppb.benefitID
 WHERE ppb.planID = @planID  AND cb.walletID = @WalletID)
 END --assuming that several cashbacks can be returned as a sum and if it is one cashback it will be the same result
 GO
@@ -635,10 +630,10 @@ AS
 
 SELECT @allPoints = sum(p.pointsAmount)
 FROM Benefits b, Points_Group p
-WHERE b.mobileNo = @MobileNo and b.benefit_id = p.benefit_id
+WHERE b.mobileNo = @MobileNo and b.benefitID = p.benefitID
 
 UPDATE Customer_Account
-SET points = @allPoints
+SET point = @allPoints
 WHERE @MobileNo = mobileNo
 
 GO
@@ -768,11 +763,11 @@ DECLARE @Remaining_amount decimal(10,2)
 SET @Remaining_amount =       
 CASE 
     WHEN 
-        (SELECT amount FROM Payment  WHERE p.mobileNo = @MobileNo AND status = 'pending') < 
+        (SELECT amount FROM Payment  WHERE mobileNo = @MobileNo AND status = 'pending') < 
         (SELECT price FROM Service_Plan WHERE name = @plan_name)
     THEN 
         (SELECT price FROM Service_Plan WHERE name = @plan_name) - 
-        (SELECT amount FROM Payment  WHERE p.mobileNo = @MobileNo AND status = 'pending')
+        (SELECT amount FROM Payment  WHERE mobileNo = @MobileNo AND status = 'pending')
     ELSE 0
 END
 RETURN @Remaining_amount
@@ -790,10 +785,10 @@ DECLARE @Extra_amount INT
 SET @Extra_amount =       
 CASE 
     WHEN 
-        (SELECT amount FROM Payment  WHERE p.mobileNo = @MobileNo AND status = 'pending') > 
+        (SELECT amount FROM Payment  WHERE mobileNo = @MobileNo AND status = 'pending') > 
         (SELECT price FROM Service_Plan WHERE name = @plan_name)
     THEN 
-        (SELECT amount FROM Payment  WHERE p.mobileNo = @MobileNo AND status = 'pending') -
+        (SELECT amount FROM Payment  WHERE mobileNo = @MobileNo AND status = 'pending') -
         (SELECT price FROM Service_Plan WHERE name = @plan_name)
     ELSE 0
 END
@@ -809,21 +804,21 @@ AS
 Select top 10 amount  from Payment AS p 
 where p.mobileNo = @MobileNo and p.status = 'successful'
 order by amount desc
-GO;
+GO
 
 --K
 GO
 CREATE FUNCTION Subscribed_plans_5_Months (
     @MobileNo char(11)
 )
-returns Table 
+RETURNS TABLE  
 AS
-return (Select Service_Plan.* 
-from 
+RETURN (SELECT sp.* 
+FROM
 Service_Plan AS sp , Subscription AS s 
-where sp.planID = s.planID and s.mobileNo = @MobileNo and s.date >= DATEADD(MONTH, -5, GETDATE()))
+where sp.planID = s.planID and s.mobileNo = @MobileNo and s.subscription_date >= DATEADD(MONTH, -5, GETDATE()))
 GO
-drop function Subscribed_plans_5_Months
+
 
 --L
 GO
@@ -854,7 +849,7 @@ AS
 
 if exists (Select *
     FROM Benefits b
-    WHERE b.mobileNo = @MobileNo and b.benefit_id = @benefit_id and b.validity_date >=  GETDATE())
+    WHERE b.mobileNo = @MobileNo and b.benefitID = @benefit_id and b.validity_date >=  GETDATE())
 
     begin
 
