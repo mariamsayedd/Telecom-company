@@ -310,6 +310,8 @@ AS
 DROP PROCEDURE createAllTables
 DROP PROCEDURE dropAllTables
 DROP PROCEDURE clearAllTables
+DROP FUNCTION Remaining_plan_amount_helper
+DROP FUNCTION Extra_plan_amount_helper
 
 --2.2--
 DROP VIEW allCustomerAccounts
@@ -532,7 +534,9 @@ FROM Benefits b
 INNER JOIN Customer_Account c ON b.mobileNo = c.mobileNo 
 INNER JOIN Subscription s ON c.mobileNo = s.mobileNo
 WHERE b.mobileNo=@MobileNo AND s.planID = @planID
-GO    --We need to output a table
+
+SELECT * FROM Benefits --added benefits as output
+GO    
     
 --E
 GO
@@ -579,7 +583,7 @@ BEGIN
 RETURN (SELECT sum(cb.amount) FROM Cashback AS cb 
 INNER JOIN Plan_Provides_Benefits AS ppb ON cb.benefit_id = ppb.benefit_id 
 WHERE ppb.planID = @planID  AND cb.walletID = @WalletID)
-END --check if sum
+END --assuming that several cashbacks can be returned as a sum and if it is one cashback it will be the same result
 GO
 
 --H
@@ -689,13 +693,14 @@ CREATE FUNCTION Usage_Plan_CurrentMonth
 RETURNS Table
 AS
 RETURN (
-SELECT data_consumption, minutes_used, SMS_sent
-FROM Plan_Usage 
-WHERE mobileNo=@MobileNo 
+SELECT p.data_consumption, p.minutes_used, p.SMS_sent
+FROM Plan_Usage p INNER JOIN Subscription s on p.planID = s.planID AND s.mobileNo = @MobileNo
+WHERE p.mobileNo = @MobileNo 
       AND MONTH(start_date) = MONTH(current_timestamp) 
       AND YEAR(start_date) = YEAR(current_timestamp) 
-      AND end_date >= current_timestamp --to make sure it's still active
-      --add join to check active status in subscription
+      AND p.end_date >= current_timestamp --to make sure it's still active
+      AND s.status = 'active'
+      --add join to check active status in subscription (done)
 )
 GO
 
@@ -725,16 +730,16 @@ GO
 --F
 GO
 CREATE PROCEDURE Ticket_Account_Customer
-@NationalID int,
-@result int output
+@NationalID int
 AS
-SELECT @result = count(t.ticketID) 
+SELECT a.mobileNo,count(t.ticketID) 
 FROM Customer_profile p 
 INNER JOIN Customer_Account a ON p.nationalID=a.nationalID 
 INNER JOIN Technical_Support_Ticket t ON a.mobileNo=t.mobileNo 
 WHERE t.status <> 'resolved' AND p.nationalID = @NationalID
 GROUP BY a.mobileNo
 --Output a table or just the total number?
+--chose to just output the table and remove the output variable
 GO
     
 --G
@@ -750,7 +755,7 @@ INNER JOIN Customer_Account a ON v.mobileNo = a.mobileNo
 WHERE a.mobileNo = @MobileNo
 ORDER BY v.value DESC)
 GO
---should we error handle at 0 vouchers?
+
 
 --H
 GO
@@ -866,18 +871,19 @@ if exists (Select *
     WHERE Customer_Account.mobileNo = @MobileNo and Wallet.nationalID = Customer_Account.nationalID
 
 
-    INSERT INTO Cashback (benefit_id , walletID, amount, credit_date ) Values (@benefit_id, @walletID, 0.1*@paymentAmount, GETDATE() )
+    UPDATE Cashback
+    SET amount = CAST(@paymentAmount * 0.1 AS INT)
+    WHERE walletID = @walletID AND benefitID = @benefit_id
     
-    update Wallet
-    set current_balance =   current_balance + 0.1*(@paymentAmount) 
+    UPDATE Wallet
+    SET current_balance =   current_balance + (CAST(@paymentAmount * 0.1 AS INT))
     WHERE walletID = @walletID 
-
 
     END
 else 
-    print "Error"-- I have no Idea what to do in the else here 
+    print 'Couldnt find cashback'
 GO
---change from insert to update
+--change from insert to update(done)
 
 --N
 GO
