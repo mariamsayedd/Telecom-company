@@ -751,7 +751,6 @@ WHERE a.mobileNo = @MobileNo
 ORDER BY v.value DESC)
 GO
 
-
 --H
 GO
 CREATE FUNCTION Remaining_plan_amount
@@ -760,16 +759,17 @@ RETURNS decimal(10,2)
 AS
 BEGIN
 DECLARE @Remaining_amount decimal(10,2)
-SET @Remaining_amount =       
+set @Remaining_amount = (
 CASE 
-    WHEN 
-        (SELECT amount FROM Payment  WHERE mobileNo = @MobileNo AND status = 'pending') < 
-        (SELECT price FROM Service_Plan WHERE name = @plan_name)
-    THEN 
-        (SELECT price FROM Service_Plan WHERE name = @plan_name) - 
-        (SELECT amount FROM Payment  WHERE mobileNo = @MobileNo AND status = 'pending')
+    WHEN        
+        (SELECT price FROM Service_Plan WHERE name = @plan_name) > 
+        (SELECT amount FROM Payment  WHERE mobileNo = @MobileNo AND date_of_payment = (select max(date_of_payment) from payment where mobileNo = @MobileNo )) 
+    THEN  
+		(SELECT price FROM Service_Plan WHERE name = @plan_name)-
+		(SELECT amount FROM Payment  WHERE mobileNo = @MobileNo AND date_of_payment = (select max(date_of_payment) from payment where mobileNo = @MobileNo )) 
     ELSE 0
 END
+)
 RETURN @Remaining_amount
 END
 GO
@@ -783,19 +783,20 @@ AS
 BEGIN
 DECLARE @Extra_amount INT
 SET @Extra_amount =       
-CASE 
-    WHEN 
-        (SELECT amount FROM Payment  WHERE mobileNo = @MobileNo AND status = 'pending') > 
-        (SELECT price FROM Service_Plan WHERE name = @plan_name)
-    THEN 
-        (SELECT amount FROM Payment  WHERE mobileNo = @MobileNo AND status = 'pending') -
-        (SELECT price FROM Service_Plan WHERE name = @plan_name)
-    ELSE 0
+(CASE 
+    WHEN        
+        (SELECT price FROM Service_Plan WHERE name = @plan_name) < 
+        (SELECT amount FROM Payment  WHERE mobileNo = @MobileNo AND date_of_payment = (select max(date_of_payment) from payment where mobileNo = @MobileNo )) 
+    THEN  
+		(SELECT amount FROM Payment  WHERE mobileNo = @MobileNo AND date_of_payment = (select max(date_of_payment) from payment where mobileNo = @MobileNo )) -
+		(SELECT price FROM Service_Plan WHERE name = @plan_name)
+	ELSE 0
 END
+)
 RETURN @Extra_amount
 END
 GO
-
+    
 --J 
 GO
 CREATE PROCEDURE Top_Successful_Payments
