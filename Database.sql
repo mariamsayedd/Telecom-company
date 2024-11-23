@@ -1,6 +1,4 @@
-﻿
-﻿drop database Telecom_Team_12
-----------2.1---------
+﻿----------2.1---------
 --A
 CREATE database Telecom_Team_12
 
@@ -82,44 +80,6 @@ CREATE TABLE Payment(
     CHECK(payment_method in ('cash', 'credit'))
 )
 
-GO
-CREATE FUNCTION Remaining_plan_amount_helper(
-@PaymentID int,
-@PlanID int)
-RETURNS decimal(10,2)
-AS
-BEGIN
-DECLARE @MobileNo char(11)
-DECLARE @Plan_name varchar(50)
-DECLARE @Remaining_balance decimal(10,2)
-
-SET @MobileNo = (SELECT mobileNo FROM Payment Where Payment.paymentID = @PaymentID)
-SET @Plan_name = (SELECT name FROM Service_Plan WHERE Service_Plan.planID = @PlanID)
-SET @Remaining_balance = dbo.Remaining_plan_amount(@MobileNo,@Plan_name)
-
-RETURN @Remaining_balance
-END
-GO
-
-GO
-CREATE FUNCTION Extra_plan_amount_helper(
-@PaymentID int,
-@PlanID int)
-RETURNS decimal(10,2)
-AS
-BEGIN
-DECLARE @MobileNo char(11)
-DECLARE @Plan_name varchar(50)
-DECLARE @Extra_amount decimal(10,2)
-
-SET @MobileNo = (SELECT mobileNo FROM Payment Where Payment.paymentID = @PaymentID)
-SET @Plan_name = (SELECT name FROM Service_Plan WHERE Service_Plan.planID = @PlanID)
-SET @Extra_amount = dbo.Extra_plan_amount(@MobileNo,@Plan_name)
-
-RETURN @Extra_amount
-END
-GO
-
 CREATE TABLE Process_Payment (
     paymentID int PRIMARY KEY,
     planID int,
@@ -167,7 +127,7 @@ CREATE TABLE Points_Group(
     pointsAmount int, 
     PaymentID int,
     PRIMARY KEY (pointID , benefitID),
-    CONSTRAINT FK_Points_Group1 FOREIGN KEY (benefitID) references Benefits,
+    CONSTRAINT FK_Points_Group1 FOREIGN KEY (benefitID) references Benefits on delete cascade,
     CONSTRAINT FK_Points_Group2 FOREIGN KEY (PaymentID) references Payment
 )
 
@@ -178,7 +138,7 @@ CREATE TABLE Exclusive_Offer(
     SMS_offered int,
     minutes_offered int,
     PRIMARY KEY (offerID, benefitID),
-    CONSTRAINT FK_Exclusive_Offer FOREIGN KEY (benefitID) references Benefits
+    CONSTRAINT FK_Exclusive_Offer FOREIGN KEY (benefitID) references Benefits on delete cascade
 )
 
 CREATE TABLE Cashback (
@@ -188,7 +148,7 @@ CREATE TABLE Cashback (
     amount int DEFAULT (0),
     credit_date date,
     PRIMARY KEY (CashbackID, benefitID),
-    CONSTRAINT FK_Cashback1 FOREIGN KEY (benefitID) references Benefits,
+    CONSTRAINT FK_Cashback1 FOREIGN KEY (benefitID) references Benefits on delete cascade,
     CONSTRAINT FK_Cashback2 FOREIGN KEY (walletID) references Wallet
 )
 
@@ -196,7 +156,7 @@ CREATE TABLE Plan_Provides_Benefits (
     benefitID int, 
     planID int,
     PRIMARY KEY (benefitID, planID),
-    CONSTRAINT FK_Plan_Provides_Benefits1 FOREIGN KEY (benefitID) references Benefits,
+    CONSTRAINT FK_Plan_Provides_Benefits1 FOREIGN KEY (benefitID) references Benefits on delete cascade,
     CONSTRAINT FK_Plan_Provides_Benefits2 FOREIGN KEY (planID) references Service_Plan
 )
 
@@ -241,10 +201,48 @@ CREATE TABLE Technical_Support_Ticket(
     PRIMARY KEY (ticketID , mobileNo),
     CONSTRAINT FK_Technical_Support_Ticket FOREIGN KEY (mobileNo) references Customer_Account,
     CHECK (status in ('Open','In Progress','Resolved'))
+
 )
 GO
-EXEC createAllTables
+    CREATE FUNCTION Remaining_plan_amount_helper(
+    @PaymentID int,
+    @PlanID int)
+    RETURNS decimal(10,2)
+    AS
+    BEGIN
+    DECLARE @MobileNo char(11)
+    DECLARE @Plan_name varchar(50)
+    DECLARE @Remaining_balance decimal(10,2)
 
+    SET @MobileNo = (SELECT mobileNo FROM Payment Where Payment.paymentID = @PaymentID)
+    SET @Plan_name = (SELECT name FROM Service_Plan WHERE Service_Plan.planID = @PlanID)
+    SET @Remaining_balance = dbo.Remaining_plan_amount(@MobileNo,@Plan_name)
+
+    RETURN @Remaining_balance
+    END
+    GO
+
+    GO
+    CREATE FUNCTION Extra_plan_amount_helper(
+    @PaymentID int,
+    @PlanID int)
+    RETURNS decimal(10,2)
+    AS
+    BEGIN
+    DECLARE @MobileNo char(11)
+    DECLARE @Plan_name varchar(50)
+    DECLARE @Extra_amount decimal(10,2)
+
+    SET @MobileNo = (SELECT mobileNo FROM Payment Where Payment.paymentID = @PaymentID)
+    SET @Plan_name = (SELECT name FROM Service_Plan WHERE Service_Plan.planID = @PlanID)
+    SET @Extra_amount = dbo.Extra_plan_amount(@MobileNo,@Plan_name)
+
+    RETURN @Extra_amount
+    END
+    GO
+GO
+
+EXEC createAllTables
 
 --C
 GO
@@ -299,7 +297,6 @@ AS
     DROP TABLE Technical_Support_Ticket
 
 GO
-EXEC dropAllTables
 
 --D
 GO
@@ -361,7 +358,6 @@ AS
     EXEC dropAllTables
     EXEC createAllTables
 GO
-EXEC clearAllTables
 
 ----------2.2---------
 --A
@@ -445,7 +441,7 @@ GO
 GO
 CREATE VIEW CustomerWallet
 AS
-SELECT Wallet.* , Customer_profile.name 
+SELECT Wallet.* , Customer_profile.first_name , Customer_profile.last_name
 FROM Wallet , Customer_profile
 WHERE Wallet.nationalID = Customer_profile.nationalID
 GO
@@ -532,7 +528,8 @@ FROM Benefits b
 INNER JOIN Customer_Account c ON b.mobileNo = c.mobileNo 
 INNER JOIN Subscription s ON c.mobileNo = s.mobileNo
 WHERE b.mobileNo=@MobileNo AND s.planID = @planID
-GO    --We need to output a table
+SELECT * FROM Benefits 
+GO    
     
 --E
 GO
@@ -577,9 +574,9 @@ RETURNS int
 AS
 BEGIN 
 RETURN (SELECT sum(cb.amount) FROM Cashback AS cb 
-INNER JOIN Plan_Provides_Benefits AS ppb ON cb.benefit_id = ppb.benefit_id 
+INNER JOIN Plan_Provides_Benefits AS ppb ON cb.benefitID = ppb.benefitID
 WHERE ppb.planID = @planID  AND cb.walletID = @WalletID)
-END --check if sum
+END
 GO
 
 --H
@@ -631,10 +628,10 @@ AS
 
 SELECT @allPoints = sum(p.pointsAmount)
 FROM Benefits b, Points_Group p
-WHERE b.mobileNo = @MobileNo and b.benefit_id = p.benefit_id
+WHERE b.mobileNo = @MobileNo and b.benefitID = p.benefitID
 
 UPDATE Customer_Account
-SET points = @allPoints
+SET point = @allPoints
 WHERE @MobileNo = mobileNo
 
 GO
@@ -689,13 +686,12 @@ CREATE FUNCTION Usage_Plan_CurrentMonth
 RETURNS Table
 AS
 RETURN (
-SELECT data_consumption, minutes_used, SMS_sent
-FROM Plan_Usage 
-WHERE mobileNo=@MobileNo 
-      AND MONTH(start_date) = MONTH(current_timestamp) 
-      AND YEAR(start_date) = YEAR(current_timestamp) 
-      AND end_date >= current_timestamp --to make sure it's still active
-      --add join to check active status in subscription
+SELECT p.data_consumption, p.minutes_used, p.SMS_sent
+FROM Plan_Usage p INNER JOIN Subscription s on p.planID = s.planID AND s.mobileNo = @MobileNo
+WHERE p.mobileNo = @MobileNo 
+      AND MONTH(p.start_date) = MONTH(current_timestamp) 
+      AND YEAR(p.start_date) = YEAR(current_timestamp) 
+      AND s.status = 'active'
 )
 GO
 
@@ -725,18 +721,17 @@ GO
 --F
 GO
 CREATE PROCEDURE Ticket_Account_Customer
-@NationalID int,
-@result int output
+@NationalID int
 AS
-SELECT @result = count(t.ticketID) 
+SELECT a.mobileNo,count(t.ticketID) as Number_of_tickets
 FROM Customer_profile p 
 INNER JOIN Customer_Account a ON p.nationalID=a.nationalID 
 INNER JOIN Technical_Support_Ticket t ON a.mobileNo=t.mobileNo 
 WHERE t.status <> 'resolved' AND p.nationalID = @NationalID
 GROUP BY a.mobileNo
---Output a table or just the total number?
+
 GO
-    
+
 --G
 GO
 CREATE PROCEDURE Account_Highest_Voucher
@@ -750,7 +745,6 @@ INNER JOIN Customer_Account a ON v.mobileNo = a.mobileNo
 WHERE a.mobileNo = @MobileNo
 ORDER BY v.value DESC)
 GO
---should we error handle at 0 vouchers?
 
 --H
 GO
@@ -760,16 +754,17 @@ RETURNS decimal(10,2)
 AS
 BEGIN
 DECLARE @Remaining_amount decimal(10,2)
-SET @Remaining_amount =       
+set @Remaining_amount = (
 CASE 
-    WHEN 
-        (SELECT amount FROM Payment  WHERE p.mobileNo = @MobileNo AND status = 'pending') < 
-        (SELECT price FROM Service_Plan WHERE name = @plan_name)
-    THEN 
-        (SELECT price FROM Service_Plan WHERE name = @plan_name) - 
-        (SELECT amount FROM Payment  WHERE p.mobileNo = @MobileNo AND status = 'pending')
+    WHEN        
+        (SELECT price FROM Service_Plan WHERE name = @plan_name) > 
+        (SELECT amount FROM Payment  WHERE mobileNo = @MobileNo AND date_of_payment = (select max(date_of_payment) from payment where mobileNo = @MobileNo )) 
+    THEN  
+		(SELECT price FROM Service_Plan WHERE name = @plan_name)-
+		(SELECT amount FROM Payment  WHERE mobileNo = @MobileNo AND date_of_payment = (select max(date_of_payment) from payment where mobileNo = @MobileNo )) 
     ELSE 0
 END
+)
 RETURN @Remaining_amount
 END
 GO
@@ -783,19 +778,21 @@ AS
 BEGIN
 DECLARE @Extra_amount INT
 SET @Extra_amount =       
-CASE 
-    WHEN 
-        (SELECT amount FROM Payment  WHERE p.mobileNo = @MobileNo AND status = 'pending') > 
-        (SELECT price FROM Service_Plan WHERE name = @plan_name)
-    THEN 
-        (SELECT amount FROM Payment  WHERE p.mobileNo = @MobileNo AND status = 'pending') -
-        (SELECT price FROM Service_Plan WHERE name = @plan_name)
-    ELSE 0
+(CASE 
+    WHEN        
+        (SELECT price FROM Service_Plan WHERE name = @plan_name) < 
+        (SELECT amount FROM Payment  WHERE mobileNo = @MobileNo AND date_of_payment = (select max(date_of_payment) from payment where mobileNo = @MobileNo )) 
+    THEN  
+		(SELECT amount FROM Payment  WHERE mobileNo = @MobileNo AND date_of_payment = (select max(date_of_payment) from payment where mobileNo = @MobileNo )) -
+		(SELECT price FROM Service_Plan WHERE name = @plan_name)
+	ELSE 0
 END
+)
 RETURN @Extra_amount
 END
 GO
 
+    
 --J 
 GO
 CREATE PROCEDURE Top_Successful_Payments
@@ -804,21 +801,20 @@ AS
 Select top 10 amount  from Payment AS p 
 where p.mobileNo = @MobileNo and p.status = 'successful'
 order by amount desc
-GO;
+GO
 
 --K
 GO
 CREATE FUNCTION Subscribed_plans_5_Months (
     @MobileNo char(11)
 )
-returns Table 
+RETURNS TABLE  
 AS
-return (Select Service_Plan.* 
-from 
+RETURN (SELECT sp.* 
+FROM
 Service_Plan AS sp , Subscription AS s 
-where sp.planID = s.planID and s.mobileNo = @MobileNo and s.date >= DATEADD(MONTH, -5, GETDATE()))
+where sp.planID = s.planID and s.mobileNo = @MobileNo and s.subscription_date >= DATEADD(MONTH, -5, GETDATE()))
 GO
-drop function Subscribed_plans_5_Months
 
 --L
 GO
@@ -828,12 +824,11 @@ CREATE PROCEDURE Initiate_plan_payment
 @payment_method varchar(50),
 @plan_id int
 AS
-
 -- in the description of the procedure it is mentioned that the payment is accepted so i guess we should not look at whether the payment is suffecient or not and straight away update and insert the values
 
 INSERT INTO Payment (amount, date_of_payment, payment_method, status, mobileNo) Values(@amount, GETDATE(), @payment_method, 'successful', @MobileNo )
-update Subscription 
-set status = 'active' 
+UPDATE Subscription 
+SET status = 'active' 
 WHERE mobileNo = @MobileNo and planID = @plan_id
 GO
 
@@ -849,7 +844,7 @@ AS
 
 if exists (Select *
     FROM Benefits b
-    WHERE b.mobileNo = @MobileNo and b.benefit_id = @benefit_id and b.validity_date >=  GETDATE())
+    WHERE b.mobileNo = @MobileNo and b.benefitID = @benefit_id and b.validity_date >=  GETDATE())
 
     begin
 
@@ -866,18 +861,18 @@ if exists (Select *
     WHERE Customer_Account.mobileNo = @MobileNo and Wallet.nationalID = Customer_Account.nationalID
 
 
-    INSERT INTO Cashback (benefit_id , walletID, amount, credit_date ) Values (@benefit_id, @walletID, 0.1*@paymentAmount, GETDATE() )
+    UPDATE Cashback
+    SET amount = CAST(@paymentAmount * 0.1 AS INT)
+    WHERE walletID = @walletID AND benefitID = @benefit_id
     
-    update Wallet
-    set current_balance =   current_balance + 0.1*(@paymentAmount) 
+    UPDATE Wallet
+    SET current_balance =   current_balance + (CAST(@paymentAmount * 0.1 AS INT))
     WHERE walletID = @walletID 
-
 
     END
 else 
-    print "Error"-- I have no Idea what to do in the else here 
+    print 'Couldnt find cashback'
 GO
---change from insert to update
 
 --N
 GO
@@ -890,6 +885,7 @@ INSERT INTO Payment(amount, date_of_payment, payment_method, status,MobileNo )
      VALUES(@amount , GETDATE() , @payment_method , 'successful', @MobileNo)
 
 GO
+
 
 --O
 GO
@@ -912,4 +908,9 @@ WHERE Customer_Account.MobileNo = @MobileNo
 UPDATE Customer_Account
 SET point = @AccountPoints + @VoucherPoints
 WHERE mobileNo = @MobileNo
+
+
+UPDATE Voucher
+SET redeem_date = getDate()
+where voucherID =  @voucher_id 
 GO
