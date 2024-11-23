@@ -914,4 +914,9 @@ WHERE Customer_Account.MobileNo = @MobileNo
 UPDATE Customer_Account
 SET point = @AccountPoints + @VoucherPoints
 WHERE mobileNo = @MobileNo
+
+
+UPDATE Voucher
+SET redeem_date = getDate()
+where voucherID =  @voucher_id 
 GO
