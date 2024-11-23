@@ -128,7 +128,7 @@ CREATE TABLE Points_Group(
     pointsAmount int, 
     PaymentID int,
     PRIMARY KEY (pointID , benefitID),
-    CONSTRAINT FK_Points_Group1 FOREIGN KEY (benefitID) references Benefits,
+    CONSTRAINT FK_Points_Group1 FOREIGN KEY (benefitID) references Benefits on delete cascade,
     CONSTRAINT FK_Points_Group2 FOREIGN KEY (PaymentID) references Payment
 )
 
@@ -139,7 +139,7 @@ CREATE TABLE Exclusive_Offer(
     SMS_offered int,
     minutes_offered int,
     PRIMARY KEY (offerID, benefitID),
-    CONSTRAINT FK_Exclusive_Offer FOREIGN KEY (benefitID) references Benefits
+    CONSTRAINT FK_Exclusive_Offer FOREIGN KEY (benefitID) references Benefits on delete cascade
 )
 
 CREATE TABLE Cashback (
@@ -149,7 +149,7 @@ CREATE TABLE Cashback (
     amount int DEFAULT (0),
     credit_date date,
     PRIMARY KEY (CashbackID, benefitID),
-    CONSTRAINT FK_Cashback1 FOREIGN KEY (benefitID) references Benefits,
+    CONSTRAINT FK_Cashback1 FOREIGN KEY (benefitID) references Benefits on delete cascade,
     CONSTRAINT FK_Cashback2 FOREIGN KEY (walletID) references Wallet
 )
 
@@ -157,7 +157,7 @@ CREATE TABLE Plan_Provides_Benefits (
     benefitID int, 
     planID int,
     PRIMARY KEY (benefitID, planID),
-    CONSTRAINT FK_Plan_Provides_Benefits1 FOREIGN KEY (benefitID) references Benefits,
+    CONSTRAINT FK_Plan_Provides_Benefits1 FOREIGN KEY (benefitID) references Benefits on delete cascade,
     CONSTRAINT FK_Plan_Provides_Benefits2 FOREIGN KEY (planID) references Service_Plan
 )
 
