@@ -886,7 +886,6 @@ INSERT INTO Payment(amount, date_of_payment, payment_method, status,MobileNo )
 
 GO
 
-
 --O
 GO
 CREATE PROCEDURE Redeem_voucher_points
