@@ -1,5 +1,4 @@
-﻿
-----------2.1---------
+﻿----------2.1---------
 --A
 CREATE database Telecom_Team_12
 
@@ -243,6 +242,8 @@ GO
     GO
 GO
 
+EXEC createAllTables
+
 --C
 GO
 CREATE PROCEDURE dropAllTables
@@ -306,8 +307,6 @@ AS
 DROP PROCEDURE createAllTables
 DROP PROCEDURE dropAllTables
 DROP PROCEDURE clearAllTables
-DROP FUNCTION Remaining_plan_amount_helper
-DROP FUNCTION Extra_plan_amount_helper
 
 --2.2--
 DROP VIEW allCustomerAccounts
@@ -529,8 +528,7 @@ FROM Benefits b
 INNER JOIN Customer_Account c ON b.mobileNo = c.mobileNo 
 INNER JOIN Subscription s ON c.mobileNo = s.mobileNo
 WHERE b.mobileNo=@MobileNo AND s.planID = @planID
-
-SELECT * FROM Benefits --added benefits as output
+SELECT * FROM Benefits 
 GO    
     
 --E
@@ -578,7 +576,7 @@ BEGIN
 RETURN (SELECT sum(cb.amount) FROM Cashback AS cb 
 INNER JOIN Plan_Provides_Benefits AS ppb ON cb.benefitID = ppb.benefitID
 WHERE ppb.planID = @planID  AND cb.walletID = @WalletID)
-END --assuming that several cashbacks can be returned as a sum and if it is one cashback it will be the same result
+END
 GO
 
 --H
@@ -691,11 +689,9 @@ RETURN (
 SELECT p.data_consumption, p.minutes_used, p.SMS_sent
 FROM Plan_Usage p INNER JOIN Subscription s on p.planID = s.planID AND s.mobileNo = @MobileNo
 WHERE p.mobileNo = @MobileNo 
-      AND MONTH(start_date) = MONTH(current_timestamp) 
-      AND YEAR(start_date) = YEAR(current_timestamp) 
-      AND p.end_date >= current_timestamp --to make sure it's still active
+      AND MONTH(p.start_date) = MONTH(current_timestamp) 
+      AND YEAR(p.start_date) = YEAR(current_timestamp) 
       AND s.status = 'active'
-      --add join to check active status in subscription (done)
 )
 GO
 
@@ -727,16 +723,15 @@ GO
 CREATE PROCEDURE Ticket_Account_Customer
 @NationalID int
 AS
-SELECT a.mobileNo,count(t.ticketID) 
+SELECT a.mobileNo,count(t.ticketID) as Number_of_tickets
 FROM Customer_profile p 
 INNER JOIN Customer_Account a ON p.nationalID=a.nationalID 
 INNER JOIN Technical_Support_Ticket t ON a.mobileNo=t.mobileNo 
 WHERE t.status <> 'resolved' AND p.nationalID = @NationalID
 GROUP BY a.mobileNo
---Output a table or just the total number?
---chose to just output the table and remove the output variable
+
 GO
-    
+
 --G
 GO
 CREATE PROCEDURE Account_Highest_Voucher
@@ -796,6 +791,7 @@ END
 RETURN @Extra_amount
 END
 GO
+
     
 --J 
 GO
@@ -820,7 +816,6 @@ Service_Plan AS sp , Subscription AS s
 where sp.planID = s.planID and s.mobileNo = @MobileNo and s.subscription_date >= DATEADD(MONTH, -5, GETDATE()))
 GO
 
-
 --L
 GO
 CREATE PROCEDURE Initiate_plan_payment
@@ -829,12 +824,11 @@ CREATE PROCEDURE Initiate_plan_payment
 @payment_method varchar(50),
 @plan_id int
 AS
-
 -- in the description of the procedure it is mentioned that the payment is accepted so i guess we should not look at whether the payment is suffecient or not and straight away update and insert the values
 
 INSERT INTO Payment (amount, date_of_payment, payment_method, status, mobileNo) Values(@amount, GETDATE(), @payment_method, 'successful', @MobileNo )
-update Subscription 
-set status = 'active' 
+UPDATE Subscription 
+SET status = 'active' 
 WHERE mobileNo = @MobileNo and planID = @plan_id
 GO
 
@@ -879,7 +873,6 @@ if exists (Select *
 else 
     print 'Couldnt find cashback'
 GO
---change from insert to update(done)
 
 --N
 GO
@@ -892,6 +885,7 @@ INSERT INTO Payment(amount, date_of_payment, payment_method, status,MobileNo )
      VALUES(@amount , GETDATE() , @payment_method , 'successful', @MobileNo)
 
 GO
+
 
 --O
 GO
