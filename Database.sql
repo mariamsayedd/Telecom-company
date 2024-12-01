@@ -561,7 +561,13 @@ AND  DATEDIFF(year, p.date_of_payment, GETDATE()) = 0
 SELECT sum(pg.pointsAmount) 
 FROM Customer_Account a ,Benefits b ,Points_Group pg
 WHERE a.mobileNo = @MobileNo AND a.mobileNo = b.mobileNo AND b.benefitID = pg.benefitID 
+
 GO
+CREATE proc Total_Points_Account
+@MobileNo char(11),
+@allPoints int OUTPUT
+AS
+
 
 --G
 GO
@@ -803,6 +809,7 @@ where p.mobileNo = @MobileNo and p.status = 'successful'
 order by amount desc
 GO
 
+
 --K
 GO
 CREATE FUNCTION Subscribed_plans_5_Months (
@@ -855,10 +862,29 @@ if exists (Select *
     FROM Payment
     WHERE Payment.paymentID = @payment_id
 
+--K
+GO
+CREATE FUNCTION Subscribed_plans_5_Months (
+    @MobileNo char(11)
+)
+RETURNS TABLE  
+AS
+RETURN (SELECT sp.* 
+FROM
+Service_Plan AS sp , Subscription AS s 
+where sp.planID = s.planID and s.mobileNo = @MobileNo and s.subscription_date >= DATEADD(MONTH, -5, GETDATE()))
+GO
+
 
     SELECT @walletID = Wallet.walletID
     FROM Customer_Account, Wallet 
     WHERE Customer_Account.mobileNo = @MobileNo and Wallet.nationalID = Customer_Account.nationalID
+
+INSERT INTO Payment (amount, date_of_payment, payment_method, status, mobileNo) Values(@amount, GETDATE(), @payment_method, 'successful', @MobileNo )
+UPDATE Subscription 
+SET status = 'active' 
+WHERE mobileNo = @MobileNo and planID = @plan_id
+GO
 
 
     UPDATE Cashback
@@ -903,11 +929,13 @@ SELECT @AccountPoints =  Customer_Account.point
 FROM Customer_Account
 WHERE Customer_Account.MobileNo = @MobileNo
 
+SELECT @VoucherPoints =  voucher.points
+FROM Voucher 
+WHERE Voucher.voucherID = @voucher_id
 
 UPDATE Customer_Account
 SET point = @AccountPoints + @VoucherPoints
 WHERE mobileNo = @MobileNo
-
 
 UPDATE Voucher
 SET redeem_date = getDate()
