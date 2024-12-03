@@ -61,8 +61,7 @@ namespace WebApplication1
                     }
                     // Redirect or perform additional actions
                     else {
-                        // should be redirected to the customer page
-                        Response.Write("Welcome " + mobileNo + " ." );
+                        Response.Redirect($"UserPage.aspx?mobileNo={mobileNo}");
                     }
                 }
                 else

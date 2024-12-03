@@ -1015,6 +1015,9 @@ Exec Redeem_voucher_points @mobile_num = '01234567890', @voucher_id = 3
 insert into customer_profile values(0,'mohamed','abdelaziz','mada','tagmo3','2005/02/14')
 insert into customer_account values('01234567890','test',0,'postpaid','2024/11/11','active',0,0)
 insert into benefits values('test','2024/11/11','active','01234567890')
+insert into Technical_support_ticket values('01234567890','test',1,'Open')
 select * from customer_account
-
+SELECT nationalID FROM customer_account WHERE mobileNo ='01234567890'
 SELECT * FROM allBenefits
+
+

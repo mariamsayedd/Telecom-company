@@ -62,6 +62,10 @@
         .alert-container.show {
         display: block; /* Make visible when needed */
     }
+        #outputText{
+            left: 50%;
+
+        }
     </style>
 </head>
 <body>
@@ -105,34 +109,10 @@
             <asp:GridView ID="GridView1" runat="server" CssClass="table table-striped table-bordered table-hover" AutoGenerateColumns="true">
             </asp:GridView>
         </div>
-                <!-- Retriving SMS offers-->
-
-          <div class="container mt-5">
-            <div class="row justify-content-center">
-                <div class="col-md-4">
-                    <div class="card shadow">
-                        <div class="card-header text-center bg-primary text-white">
-                            <h5>Retrieve the list of gained offers of type ‘SMS’ for input account.</h5>
-                        </div>
-                        <div class="card-body d-grid">
-                                <div class="mb-3">
-                                    <%-- <asp:Label runat="server" Text="Enter Mobile Number" CssClass="form-label"></asp:Label> --%>
-                                    <asp:TextBox ID="smsMobileNumber" runat="server" CssClass="form-control" placeholder="Enter mobile number "></asp:TextBox>
-                                </div>
-                                <div class="d-grid col-md-3 mx-auto ">
-                                    <asp:Button ID="smsOffersButton" runat="server" Text="Query" CssClass="btn btn-primary btn-sm" />
-                                </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="container mt-5" runat="server">
+        <h3 id="outputText" runat="server"></h3>
         </div>
 
-            
-        <div class="container mt-5">
-            <asp:GridView ID="GridView2" runat="server" CssClass="table table-striped table-bordered table-hover" AutoGenerateColumns="true">
-            </asp:GridView>
-        </div>
     </form>
 </body>
 </html>
