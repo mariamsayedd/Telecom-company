@@ -105,14 +105,61 @@
 
 
 
-         <div class="container mt-5">
-            <asp:GridView ID="GridView1" runat="server" CssClass="table table-striped table-bordered table-hover" AutoGenerateColumns="true">
-            </asp:GridView>
-        </div>
-        <div class="container mt-5" runat="server">
-        <h3 id="outputText" runat="server"></h3>
+         
+
+                <!-- Retriving Remaining balance-->
+
+      <div class="container mt-5 remaningBalance" id="remainingBalance" runat="server">
+        <div class="row justify-content-center">
+            <div class="col-md-4">
+                <div class="card shadow">
+                    <div class="card-header text-center bg-primary text-white">
+                        <h5>Display the remaining amount for the last payment initiated.</h5>
+                    </div>
+                    <div class="card-body d-grid">
+                            <div class="mb-3">
+                                <asp:TextBox ID="servicePlanRem" runat="server" CssClass="form-control" placeholder="Enter Plan Name"></asp:TextBox>
+                            </div>
+                            <div class="d-grid col-md-3 mx-auto ">
+                                <asp:Button ID="remainingBalanceButton" runat="server" OnClick="getRemainingBalanceClicked" Text="Query" CssClass="btn btn-primary btn-sm" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
+                          <!-- Retriving Extra Amount-->
+
+        <div class="container mt-5 extraAmount" id="extraAmount" runat="server">
+          <div class="row justify-content-center">
+              <div class="col-md-4">
+                  <div class="card shadow">
+                      <div class="card-header text-center bg-primary text-white">
+                          <h5>Display the extra amount for the last payment initiated.</h5>
+                      </div>
+                      <div class="card-body d-grid">
+                              <div class="mb-3">
+                                  <asp:TextBox ID="servicePlanExtra" runat="server" CssClass="form-control" placeholder="Enter Plan Name"></asp:TextBox>
+                              </div>
+                              <div class="d-grid col-md-3 mx-auto ">
+                                  <asp:Button ID="extraAmountButton" runat="server" OnClick="getExtraAmountClicked" Text="Query" CssClass="btn btn-primary btn-sm" />
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+
+
+
+         <div class="container mt-5">
+        <asp:GridView ID="GridView1" runat="server" CssClass="table table-striped table-bordered table-hover" AutoGenerateColumns="true">
+        </asp:GridView>
+        </div>
+        <div class="container mt-5 justify-content-center" runat="server">
+        <h3 id="outputText" runat="server"></h3>
+        </div>
     </form>
 </body>
 </html>

@@ -1016,8 +1016,13 @@ insert into customer_profile values(0,'mohamed','abdelaziz','mada','tagmo3','200
 insert into customer_account values('01234567890','test',0,'postpaid','2024/11/11','active',0,0)
 insert into benefits values('test','2024/11/11','active','01234567890')
 insert into Technical_support_ticket values('01234567890','test',1,'Open')
+insert into voucher values(150,'2025/11/11',151,'01234567890',getdate(),1)
+insert into shop values ('test','test')
+insert into Payment values(20,GETDATE(),'cash','successful','01234567890')
 select * from customer_account
 SELECT nationalID FROM customer_account WHERE mobileNo ='01234567890'
 SELECT * FROM allBenefits
+SELECT * FROM Voucher
+select * from shop
 
 

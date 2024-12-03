@@ -42,6 +42,60 @@ namespace WebApplication1
         protected global::System.Web.UI.WebControls.Button Button1;
 
         /// <summary>
+        /// remainingBalance control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl remainingBalance;
+
+        /// <summary>
+        /// servicePlanRem control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox servicePlanRem;
+
+        /// <summary>
+        /// remainingBalanceButton control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button remainingBalanceButton;
+
+        /// <summary>
+        /// extraAmount control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl extraAmount;
+
+        /// <summary>
+        /// servicePlanExtra control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox servicePlanExtra;
+
+        /// <summary>
+        /// extraAmountButton control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button extraAmountButton;
+
+        /// <summary>
         /// GridView1 control.
         /// </summary>
         /// <remarks>
