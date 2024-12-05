@@ -31,14 +31,20 @@ namespace WebApplication1
             switch (value)
             {
                 case 1:
+                    query = "SELECT * FROM allServicePlans";
+                    callView(query);
                     break;
                 case 2:
+                    getConsumption();
                     break;
                 case 3:
+                    getOfferedPlans();
                     break;
                 case 4:
+                    getUsagePlan();
                     break;
                 case 5:
+                    getTransactions();
                     break;
                 case 6:
                     query = "SELECT * FROM allBenefits";
@@ -73,6 +79,91 @@ namespace WebApplication1
                     break;
             }
         }
+
+        //visible to false?
+
+        protected void getConsumption()   //protected void getConsumption(object sender, EventArgs e) why?  
+        {
+
+            string query = "SELECT * FROM dbo.Consumption(@Plan_name, @start_date, @end_date)";
+            String serviceName = consumptionRem.Text;
+            String serviceName2 = consumptionRem2.Text;
+            String serviceName3 = consumptionRem3.Text;
+            SqlCommand command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@Plan_name", serviceName);
+            command.Parameters.AddWithValue("@start_date", serviceName2);
+            command.Parameters.AddWithValue("@end_date", serviceName3);
+
+            SqlDataAdapter adapter = new SqlDataAdapter(command);
+            DataTable dataTable = new DataTable();
+            adapter.Fill(dataTable);
+            GridView gv = new GridView();
+            GridView1.DataSource = dataTable;
+            GridView1.DataBind();
+
+        }
+
+        protected void getOfferedPlans()
+        {
+            // Set the DataSource to null and rebind the GridView
+            GridView1.DataSource = null;
+            GridView1.DataBind();
+            outputText.InnerText = "";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string storedProcedure = "Unsubscribed_Plans";
+
+                // Create SqlCommand object to execute the stored procedure
+                using (SqlCommand command = new SqlCommand(storedProcedure, connection))
+                {
+                    // Specify that this command is a stored procedure
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@mobile_num", mobileNo);
+                    SqlDataAdapter adapter = new SqlDataAdapter(command);
+                    DataTable dataTable = new DataTable();
+                    connection.Open();
+                    adapter.Fill(dataTable);
+                    GridView1.DataSource = dataTable;
+                    GridView1.DataBind();
+                }
+            }
+        }
+
+        protected void getUsagePlan()   ////protected void getUsagePlan(object sender, EventArgs e) why?  
+        {
+
+            string query = "SELECT * FROM dbo.Usage_Plan_CurrentMonth(@MobileNo)"; ////mobileNo input?
+            String serviceName = inputMobile.Text;
+            SqlCommand command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@MobileNo", serviceName);
+
+            SqlDataAdapter adapter = new SqlDataAdapter(command);
+            DataTable dataTable = new DataTable();
+            adapter.Fill(dataTable);
+            GridView gv = new GridView();
+            GridView1.DataSource = dataTable;
+            GridView1.DataBind();
+
+        }
+
+        protected void getTransactions()   ////protected void getTransactions(object sender, EventArgs e) why?  
+        {
+
+            string query = "SELECT * FROM dbo.Cashback_Wallet_Customer(@NationalID)"; ////NationalID input?
+            String serviceName = inputNational.Text;
+            SqlCommand command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@NationalID", serviceName);
+
+            SqlDataAdapter adapter = new SqlDataAdapter(command);
+            DataTable dataTable = new DataTable();
+            adapter.Fill(dataTable);
+            GridView gv = new GridView();
+            GridView1.DataSource = dataTable;
+            GridView1.DataBind();
+
+        }
+
         protected void callView(String query)
         {
             GridView1.DataSource = null;
