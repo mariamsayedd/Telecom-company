@@ -132,15 +132,6 @@ namespace WebApplication1
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl initiatePayment;
 
         /// <summary>
-        /// Initiate_Payment_Mobile_No control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox Initiate_Payment_Mobile_No;
-
-        /// <summary>
         /// Initiate_Payment_amount control.
         /// </summary>
         /// <remarks>

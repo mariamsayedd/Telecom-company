@@ -184,9 +184,6 @@
                 </div>
                 <div class="card-body d-grid">
                         <div class="mb-3">
-                            <asp:TextBox ID="Initiate_Payment_Mobile_No" runat="server" CssClass="form-control" placeholder="Enter mobile number"></asp:TextBox>
-                        </div>
-                        <div class="mb-3">
                             <asp:TextBox ID="Initiate_Payment_amount" runat="server" CssClass="form-control" placeholder="Enter amount"></asp:TextBox>
                         </div>
                         <div class="mb-3">
@@ -196,7 +193,7 @@
                             <asp:TextBox ID="Initiate_planid" runat="server" CssClass="form-control" placeholder="Enter plan ID"></asp:TextBox>
                         </div>
                         <div class="d-grid col-md-3 mx-auto">
-                            <asp:Button ID="Initiate_Payment_submit" runat="server" OnClick="InitiatePayment" Text="Submit" CssClass="btn btn-primary btn-sm" />
+                            <asp:Button ID="Initiate_Payment_submit" runat="server" OnClick="InitiatePaymentClicked" Text="Submit" CssClass="btn btn-primary btn-sm" />
                         </div>
                 </div>
             </div>

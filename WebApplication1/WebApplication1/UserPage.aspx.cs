@@ -396,73 +396,51 @@ namespace WebApplication1
             GridView1.DataSource = null;
             GridView1.DataBind();
             outputText.InnerText = "";
-            string InputMobileNo = Initiate_Payment_Mobile_No.Text;
-            string inputAmount = Initiate_Payment_amount.Text;
+        }
+        protected void InitiatePaymentClicked(object sender, EventArgs e)
+        {
+            decimal inputAmount = decimal.Parse(Initiate_Payment_amount.Text);
             string InputPaymentMethod = Initiate_Payment_method.Text;
-            //string InputPlanIDText = Initiate_planid.Text;
-            int InputPlanID= int.Parse(Initiate_planid.Text);
-            //decimal inputAmount;
+            int InputPlanID = int.Parse(Initiate_planid.Text);
 
-           
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
 
-                // Try to parse the input as an integer
-                
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                if (InputPaymentMethod != "cash" && InputPaymentMethod != "credit")
+                    outputText.InnerText = "The payment method can only be cash or credit.";
+                else
                 {
-                    if (!ExistsInDatabase("mobileNo", InputMobileNo, "customer_account"))
+                    try
                     {
-                        outputText.InnerText = "The mobile number does not exist in the database.";
+                        string storedProcedure = "Initiate_plan_payment";
 
-                    }
-
-                    else if (InputPaymentMethod != "cash" && InputPaymentMethod != "credit")
-                        outputText.InnerText = "The payment method can only be cash or credit.";
-                    else if (!ExistsInDatabase("planID", InputPlanID.ToString(), "Service_plan"))
-                    {
-                        outputText.InnerText = "The plan ID does not exist in the database.Please enter a valid plan id";
-
-                    }
-                    else
-                    {
-                        try
+                        using (SqlCommand command = new SqlCommand(storedProcedure, connection))
                         {
-                            string storedProcedure = "Initiate_plan_payment";
+                            // Specify that this command is a stored procedure
+                            command.CommandType = CommandType.StoredProcedure;
 
-                            using (SqlCommand command = new SqlCommand(storedProcedure, connection))
-                            {
-                                // Specify that this command is a stored procedure
-                                command.CommandType = CommandType.StoredProcedure;
+                            // Add parameters to the stored procedure
+                            command.Parameters.AddWithValue("@mobile_num", mobileNo);
+                            command.Parameters.AddWithValue("@amount", inputAmount);
+                            command.Parameters.AddWithValue("@payment_method", InputPaymentMethod);
+                            command.Parameters.AddWithValue("@plan_id", InputPlanID);
 
-                                // Add parameters to the stored procedure
-                                command.Parameters.AddWithValue("@MobileNo", InputMobileNo);
-                                command.Parameters.AddWithValue("@Amount", inputAmount);
-                                command.Parameters.AddWithValue("@PaymentMethod", InputPaymentMethod);
-                                command.Parameters.AddWithValue("@PlanID", InputPlanID);
-
-                                SqlDataAdapter adapter = new SqlDataAdapter(command);
-                                DataTable dataTable = new DataTable();
-                                connection.Open();
-                                adapter.Fill(dataTable);
-
-                                if (dataTable.Rows.Count > 0)
-                                {
-                                    outputText.InnerText = "Payment initiated successfully!";
-                                }
-                                else
-                                {
-                                    outputText.InnerText = "No records found.";
-                                }
-                            }
+                            SqlDataAdapter adapter = new SqlDataAdapter(command);
+                            DataTable dataTable = new DataTable();
+                            connection.Open();
+                            adapter.Fill(dataTable);
+                            outputText.InnerText = "Payment initiated successfully!";
+                            
                         }
-                        catch (Exception ex)
-                        {
-                            // If an error occurs during database operation, display the error message
-                            outputText.InnerText = "An error occurred while processing your request. Please try again later.";
-                            Console.WriteLine("Error: " + ex.Message);
-                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        outputText.InnerText = "Error: " + ex.Message;
                     }
                 }
+            }
         }
+
 
 
 

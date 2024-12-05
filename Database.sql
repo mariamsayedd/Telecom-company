@@ -831,7 +831,6 @@ CREATE PROCEDURE [Initiate_balance_payment]
 as
 Insert into Payment (amount,date_of_payment,payment_method,status,mobileNo)
 values(@amount,CURRENT_TIMESTAMP,@payment_method,'successful',@mobile_num)
-
 update customer_account
 set balance = balance + @amount
 where mobileNo = @mobile_num
@@ -1059,3 +1058,11 @@ select * from dbo.Subscribed_plans_5_Months ('09876543210')
 ALTER TABLE customer_account CHECK CONSTRAINT ALL;
 ALTER TABLE customer_account NOCHECK CONSTRAINT ALL;
 
+Exec Initiate_plan_payment @mobile_num = '01234567890', @amount =55, @payment_method = 'cash',
+@plan_id = 1
+
+
+
+
+select * from process_payment
+select * from payment
