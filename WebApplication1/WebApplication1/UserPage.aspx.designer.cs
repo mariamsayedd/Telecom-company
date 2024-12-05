@@ -177,15 +177,6 @@ namespace WebApplication1
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl paymentwalletcashback;
 
         /// <summary>
-        /// Payment_wallet_cashback_Mobile_No control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox Payment_wallet_cashback_Mobile_No;
-
-        /// <summary>
         /// Payment_wallet_cashback_Payment_id control.
         /// </summary>
         /// <remarks>
@@ -222,15 +213,6 @@ namespace WebApplication1
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl Initiate_balance_payment;
 
         /// <summary>
-        /// Initiate_balance_payment_MobileNo control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox Initiate_balance_payment_MobileNo;
-
-        /// <summary>
         /// Initiate_balance_payment_amount control.
         /// </summary>
         /// <remarks>
@@ -265,15 +247,6 @@ namespace WebApplication1
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlGenericControl Redeem_voucher;
-
-        /// <summary>
-        /// Redeem_voucher_MobileNo control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox Redeem_voucher_MobileNo;
 
         /// <summary>
         /// Redeem_voucher_voucherID control.

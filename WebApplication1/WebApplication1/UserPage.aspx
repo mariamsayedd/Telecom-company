@@ -154,7 +154,7 @@
 
                 <!--Subscribed_Plans_Five_Months -->
 
-          <div class="container mt-5 subscribedlastFive" id="lastsubscribedfive" runat="server">
+         <!-- <div class="container mt-5 subscribedlastFive" id="lastsubscribedfive" runat="server">
     <div class="row justify-content-center">
         <div class="col-md-4">
             <div class="card shadow">
@@ -172,7 +172,7 @@
             </div>
         </div>
     </div>
-</div>
+</div>-->
 
         <!-- initiate payment-->
           <div class="container mt-5 initiatePayment" id="initiatePayment" runat="server">
@@ -211,16 +211,13 @@
                 </div>
                 <div class="card-body d-grid">
                         <div class="mb-3">
-                            <asp:TextBox ID="Payment_wallet_cashback_Mobile_No" runat="server" CssClass="form-control" placeholder="Enter mobile number"></asp:TextBox>
-                        </div>
-                        <div class="mb-3">
                             <asp:TextBox ID="Payment_wallet_cashback_Payment_id" runat="server" CssClass="form-control" placeholder="Enter payment ID"></asp:TextBox>
                         </div>
                         <div class="mb-3">
                             <asp:TextBox ID="Payment_wallet_cashback_Benefit_ID" runat="server" CssClass="form-control" placeholder="Enter benefit ID"></asp:TextBox>
                         </div>
                         <div class="d-grid col-md-3 mx-auto">
-                            <asp:Button ID="Payment_wallet_cashback_submit" runat="server" OnClick="InitiatePayment" Text="Submit" CssClass="btn btn-primary btn-sm" />
+                            <asp:Button ID="Payment_wallet_cashback_submit" runat="server" OnClick="PaymentWalletCashbackClicked" Text="Submit" CssClass="btn btn-primary btn-sm" />
                         </div>
                 </div>
             </div>
@@ -237,16 +234,13 @@
                 </div>
                 <div class="card-body d-grid">
                         <div class="mb-3">
-                            <asp:TextBox ID="Initiate_balance_payment_MobileNo" runat="server" CssClass="form-control" placeholder="Enter mobile number"></asp:TextBox>
-                        </div>
-                        <div class="mb-3">
                             <asp:TextBox ID="Initiate_balance_payment_amount" runat="server" CssClass="form-control" placeholder="Enter the amount"></asp:TextBox>
                         </div>
                         <div class="mb-3">
                             <asp:TextBox ID="Initiate_balance_payment_paymentMethod" runat="server" CssClass="form-control" placeholder="Enter the payment method"></asp:TextBox>
                         </div>
                         <div class="d-grid col-md-3 mx-auto">
-                            <asp:Button ID="Initiate_balance_payment_submit" runat="server" OnClick="InitiatePayment" Text="Submit" CssClass="btn btn-primary btn-sm" />
+                            <asp:Button ID="Initiate_balance_payment_submit" runat="server" OnClick="RechargeBalanceClicked" Text="Submit" CssClass="btn btn-primary btn-sm" />
                         </div>
                 </div>
             </div>
@@ -264,13 +258,10 @@
                 </div>
                 <div class="card-body d-grid">
                         <div class="mb-3">
-                            <asp:TextBox ID="Redeem_voucher_MobileNo" runat="server" CssClass="form-control" placeholder="Enter mobile number"></asp:TextBox>
-                        </div>
-                        <div class="mb-3">
                             <asp:TextBox ID="Redeem_voucher_voucherID" runat="server" CssClass="form-control" placeholder="Enter the voucher ID"></asp:TextBox>
                         </div>
                         <div class="d-grid col-md-3 mx-auto">
-                            <asp:Button ID="Redeem_voucher_submit" runat="server" OnClick="InitiatePayment" Text="Submit" CssClass="btn btn-primary btn-sm" />
+                            <asp:Button ID="Redeem_voucher_submit" runat="server" OnClick="RedeemVoucherClicked" Text="Submit" CssClass="btn btn-primary btn-sm" />
                         </div>
                 </div>
             </div>

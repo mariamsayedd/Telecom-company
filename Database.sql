@@ -77,9 +77,6 @@ mobileNo Char(11),
 FOREIGN KEY (mobileNo) REFERENCES customer_account (mobileNo)
 )
 
-
-
-
 create table process_payment(
 paymentID int,
 planID int,
@@ -790,6 +787,7 @@ where planID = @plan_id and mobileNo = @mobile_num
 
 go
 
+
 --//////////////////////////////////////////////////////////////////////////////////////////////////////
 ------------------------------------------------------------------------------------------------------------
 ----------------------------------------Payment_wallet_cashback-----------------------
@@ -1015,7 +1013,8 @@ insert into customer_profile values(0,'mohamed','abdelaziz','mada','tagmo3','200
 insert into customer_account values('01234567890','test',0,'postpaid','2024/11/11','active',0,0)
 insert into benefits values('test','2024/11/11','active','01234567890')
 insert into Technical_support_ticket values('01234567890','test',1,'Open')
-insert into voucher values(150,'2025/11/11',151,'01234567890',getdate(),1)
+INSERT INTO voucher 
+VALUES (150, '2025-11-11', 151, '01234567890', CONVERT(date, GETDATE()),1)
 insert into shop values ('test','test')
 insert into Payment values(20,GETDATE(),'cash','successful','01234567890')
 select * from customer_account
@@ -1025,6 +1024,7 @@ SELECT * FROM Voucher
 select * from shop
 insert into shop values('l','l')
 select * from allShops
+
 
 -- Insert into customer_profile
 INSERT INTO customer_profile 
@@ -1049,7 +1049,7 @@ VALUES
 -- Insert into Subscription
 INSERT INTO Subscription(mobileNo, planID, subscription_date, status)
 VALUES
-('01234567890', 1, '2024-07-01', 'active'), -- Within 5 months
+('01234567890', 3, '2024-12-05', 'active'), -- Within 5 months
 ('01234567890', 2, '2024-02-15', 'active'), -- Older than 5 months
 ('09876543210', 3, '2024-09-01', 'active'); -- Within 5 months
 
@@ -1061,8 +1061,23 @@ ALTER TABLE customer_account NOCHECK CONSTRAINT ALL;
 Exec Initiate_plan_payment @mobile_num = '01234567890', @amount =55, @payment_method = 'cash',
 @plan_id = 1
 
+select * from Cashback
+select * from Wallet ;
 
+insert into Wallet
+values(50,'egp','2024-12-05',101,'01234567890')
 
-
+select * from dbo.Subscribed_plans_5_Months('01234567890');
 select * from process_payment
 select * from payment
+
+Exec Payment_wallet_cashback @mobile_num = '01234567890',@payment_id = 1, @benefit_id = 1
+
+insert into Cashback
+values(1,1,50,'2024-12-05')
+
+select * from Payment
+select * from customer_account
+
+Exec Redeem_voucher_points @mobile_num = '01234567890', @voucher_id = 1
+
