@@ -57,7 +57,7 @@ namespace WebApplication1
                     
                     if (isAdmin)
                     {
-                        Response.Redirect("AdminPage.aspx");
+                            
                     }
                     // Redirect or perform additional actions
                     else {

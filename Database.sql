@@ -1019,10 +1019,17 @@ insert into Technical_support_ticket values('01234567890','test',1,'Open')
 insert into voucher values(150,'2025/11/11',151,'01234567890',getdate(),1)
 insert into shop values ('test','test')
 insert into Payment values(20,GETDATE(),'cash','successful','01234567890')
+insert into Plan_Usage values('2023-11-11','2024-11-11',10,70,60,'01234567890',1)
+insert into Subscription values ('01234567890',1,getdate(),'active')
+insert into Benefits values('test',getDate(),'active','01234567890')
+insert into Wallet values(500,'egp',getdate(),0,'01234567890')
+insert into Cashback values(1,2,100,'11-11-2024')
 select * from customer_account
 SELECT nationalID FROM customer_account WHERE mobileNo ='01234567890'
 SELECT * FROM allBenefits
 SELECT * FROM Voucher
 select * from shop
-
-
+select * from Plan_Usage
+select * from Service_plan
+select * from dbo.Consumption('Basic plan', '2023-11-11', '2024-11-11')
+select * from cashback

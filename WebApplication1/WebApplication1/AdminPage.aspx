@@ -70,6 +70,8 @@
         <img src="dark-theme.svg" alt="My Happy SVG" />
     </button>    
     <form runat="server">
+    <asp:Button ID="SignOut" runat="server" OnClick="signOut" type="button" text="Sign out" class="btn btn-primary" />
+
       <%-- <div class="btn-group" role="group">
 
   <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">

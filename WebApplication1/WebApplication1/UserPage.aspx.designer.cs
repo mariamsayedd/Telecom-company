@@ -15,6 +15,15 @@ namespace WebApplication1
     {
 
         /// <summary>
+        /// bodyTag control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl bodyTag;
+
+        /// <summary>
         /// form1 control.
         /// </summary>
         /// <remarks>
@@ -22,6 +31,15 @@ namespace WebApplication1
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
+
+        /// <summary>
+        /// SignOut control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button SignOut;
 
         /// <summary>
         /// dropDown control.
@@ -96,31 +114,40 @@ namespace WebApplication1
         protected global::System.Web.UI.WebControls.Button extraAmountButton;
 
         /// <summary>
-        /// consumptionRem control.
+        /// getconsume control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox consumptionRem;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl getconsume;
 
         /// <summary>
-        /// consumptionRem2 control.
+        /// consumption1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox consumptionRem2;
+        protected global::System.Web.UI.WebControls.TextBox consumption1;
 
         /// <summary>
-        /// consumptionRem3 control.
+        /// consumption2 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox consumptionRem3;
+        protected global::System.Web.UI.WebControls.TextBox consumption2;
+
+        /// <summary>
+        /// consumption3 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox consumption3;
 
         /// <summary>
         /// consumptionButton control.
@@ -130,42 +157,6 @@ namespace WebApplication1
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button consumptionButton;
-
-        /// <summary>
-        /// inputMobile control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox inputMobile;
-
-        /// <summary>
-        /// planUsageButton control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button planUsageButton;
-
-        /// <summary>
-        /// inputNational control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox inputNational;
-
-        /// <summary>
-        /// transactionsButton control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button transactionsButton;
 
         /// <summary>
         /// GridView1 control.

@@ -17,8 +17,30 @@ namespace WebApplication1
         static string mobileNo = null;
         protected void Page_Load(object sender, EventArgs e)
         {
-            //mobileNo = Request.QueryString["mobileNo"];
-            mobileNo = "01234567890";
+            mobileNo = Request.QueryString["mobileNo"];
+            if (mobileNo == null)
+            {
+                bodyTag.InnerHtml = "<h1 class=\"mb-3\">ACCESS FORBIDDEN!!!!!</h1>";
+            }
+            else
+            {
+                string query = "SELECT nationalID FROM customer_account WHERE mobileNo = " + mobileNo;
+                SqlDataAdapter adapter = new SqlDataAdapter(query, connectionString);
+                DataTable dataTable = new DataTable();
+                adapter.Fill(dataTable);
+                int nationalID = int.Parse(dataTable.Rows[0][0].ToString());
+                query = "SELECT first_name FROM customer_profile WHERE nationalID = " + nationalID;
+                adapter = new SqlDataAdapter(query, connectionString);
+                dataTable = new DataTable();
+                adapter.Fill(dataTable);
+                String name = dataTable.Rows[0][0].ToString();
+                Response.Write($"Hello {name}");
+
+            }
+
+            //mobileNo = "01234567890";
+            if (dropDown.SelectedValue != "2")
+                getconsume.Visible = false;
             if (dropDown.SelectedValue != "9")
                 remainingBalance.Visible = false;
             if (dropDown.SelectedValue != "10")
@@ -82,17 +104,25 @@ namespace WebApplication1
 
         //visible to false?
 
-        protected void getConsumption()   //protected void getConsumption(object sender, EventArgs e) why?  
+        protected void getConsumption()
+        {
+            GridView1.DataSource = null;
+            GridView1.DataBind();
+            outputText.InnerText = "";
+            getconsume.Visible = true;
+        }
+
+        protected void getConsumptionClicked(object sender, EventArgs e)
         {
 
             string query = "SELECT * FROM dbo.Consumption(@Plan_name, @start_date, @end_date)";
-            String serviceName = consumptionRem.Text;
-            String serviceName2 = consumptionRem2.Text;
-            String serviceName3 = consumptionRem3.Text;
+            String serviceName = consumption1.Text;
+            String startDate = consumption2.Text;
+            String endDate = consumption3.Text;
             SqlCommand command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@Plan_name", serviceName);
-            command.Parameters.AddWithValue("@start_date", serviceName2);
-            command.Parameters.AddWithValue("@end_date", serviceName3);
+            command.Parameters.AddWithValue("@start_date", startDate);
+            command.Parameters.AddWithValue("@end_date", endDate);
 
             SqlDataAdapter adapter = new SqlDataAdapter(command);
             DataTable dataTable = new DataTable();
@@ -119,7 +149,7 @@ namespace WebApplication1
                 {
                     // Specify that this command is a stored procedure
                     command.CommandType = CommandType.StoredProcedure;
-                    command.Parameters.AddWithValue("@mobile_num", mobileNo);
+                    command.Parameters.AddWithValue("@mobile_num", mobileNo); ////mobileNo input?
                     SqlDataAdapter adapter = new SqlDataAdapter(command);
                     DataTable dataTable = new DataTable();
                     connection.Open();
@@ -130,33 +160,38 @@ namespace WebApplication1
             }
         }
 
-        protected void getUsagePlan()   ////protected void getUsagePlan(object sender, EventArgs e) why?  
+        protected void getUsagePlan()
         {
-
-            string query = "SELECT * FROM dbo.Usage_Plan_CurrentMonth(@MobileNo)"; ////mobileNo input?
-            String serviceName = inputMobile.Text;
+            GridView1.DataSource = null;
+            GridView1.DataBind();
+            outputText.InnerText = "";
+            string query = "SELECT * FROM dbo.Usage_Plan_CurrentMonth(@MobileNo)";
             SqlCommand command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@MobileNo", serviceName);
-
+            command.Parameters.AddWithValue("@MobileNo", mobileNo);
             SqlDataAdapter adapter = new SqlDataAdapter(command);
             DataTable dataTable = new DataTable();
             adapter.Fill(dataTable);
             GridView gv = new GridView();
             GridView1.DataSource = dataTable;
             GridView1.DataBind();
-
         }
-
-        protected void getTransactions()   ////protected void getTransactions(object sender, EventArgs e) why?  
+        protected void getTransactions()
         {
-
-            string query = "SELECT * FROM dbo.Cashback_Wallet_Customer(@NationalID)"; ////NationalID input?
-            String serviceName = inputNational.Text;
-            SqlCommand command = new SqlCommand(query, connection);
-            command.Parameters.AddWithValue("@NationalID", serviceName);
-
-            SqlDataAdapter adapter = new SqlDataAdapter(command);
+            GridView1.DataSource = null;
+            GridView1.DataBind();
+            outputText.InnerText = "";
+            string query = "SELECT nationalID FROM customer_account WHERE mobileNo = " + mobileNo;
+            SqlDataAdapter adapter = new SqlDataAdapter(query, connectionString);
             DataTable dataTable = new DataTable();
+            adapter.Fill(dataTable);
+            int nationalID = int.Parse(dataTable.Rows[0][0].ToString());
+
+            query = "SELECT * FROM dbo.Cashback_Wallet_Customer(@NationalID)";
+            SqlCommand command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@NationalID", nationalID);
+
+            adapter = new SqlDataAdapter(command);
+            dataTable = new DataTable();
             adapter.Fill(dataTable);
             GridView gv = new GridView();
             GridView1.DataSource = dataTable;
@@ -246,7 +281,7 @@ namespace WebApplication1
                     // Specify that this command is a stored procedure
                     command.CommandType = CommandType.StoredProcedure;
 
-                    command.Parameters.AddWithValue("@mobile_num",  mobileNo);
+                    command.Parameters.AddWithValue("@mobile_num", mobileNo);
 
                     SqlDataAdapter adapter = new SqlDataAdapter(command);
 
@@ -273,7 +308,6 @@ namespace WebApplication1
             GridView1.DataBind();
             outputText.InnerText = "";
             remainingBalance.Visible = true;
-            //extraAmount.Visible = false;
         }
         protected void getRemainingBalanceClicked(object sender, EventArgs e)
         {
@@ -403,6 +437,10 @@ namespace WebApplication1
                     }
                 }
             }
+        }
+        protected void signOut(object sender, EventArgs e)
+        {
+            Response.Redirect("Login.aspx");
         }
     }
 }

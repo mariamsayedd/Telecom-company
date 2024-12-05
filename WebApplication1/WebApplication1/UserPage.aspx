@@ -68,8 +68,9 @@
         }
     </style>
 </head>
-<body>
+<body id="bodyTag"  runat="server">
     <form id="form1" runat="server">
+    <asp:Button ID="SignOut" runat="server" OnClick="signOut" type="button" text="Sign out" class="btn btn-primary" />
     <div class="container">
     <div class="centered-div text-center">
         <h2 class="mb-3">Choose an Action</h2>
@@ -155,7 +156,7 @@
 
          <!-- Consumption-->
 
-                  <div class="container mt-5">
+                  <div class="container mt-5 getconsume" id="getconsume" runat="server">
     <div class="row justify-content-center">
         <div class="col-md-4">
             <div class="card shadow">
@@ -164,71 +165,24 @@
                 </div>
                 <div class="card-body d-grid">
                         <div class="mb-3">
-                            <%-- <asp:Label runat="server" Text="Enter Mobile Number" CssClass="form-label"></asp:Label> --%>
-                            <asp:TextBox ID="consumptionRem" runat="server" CssClass="form-control" placeholder="Enter plan ID " TextMode="Date"></asp:TextBox>
+                            <asp:TextBox ID="consumption1" runat="server" CssClass="form-control" placeholder="Enter plan ID " ></asp:TextBox>
                         </div>
                     <div class="mb-1">
-                        <%-- <asp:Label runat="server" Text="Enter Mobile Number" CssClass="form-label"></asp:Label> --%>
-                        <asp:TextBox ID="consumptionRem2" runat="server" CssClass="form-control" placeholder="Enter start date "></asp:TextBox>
+                        <asp:Label runat="server" Text="Enter Start Date" CssClass="form-label"></asp:Label>
+                        <asp:TextBox ID="consumption2" runat="server" CssClass="form-control"  TextMode="Date"></asp:TextBox>
                     </div>
                     <div class="mb-1">
-                        <%-- <asp:Label runat="server" Text="Enter Mobile Number" CssClass="form-label"></asp:Label> --%>
-                        <asp:TextBox ID="consumptionRem3" runat="server" CssClass="form-control" placeholder="Enter end date "></asp:TextBox>
+                        <asp:Label runat="server" Text="Enter End Date" CssClass="form-label"></asp:Label>
+                        <asp:TextBox ID="consumption3" runat="server" CssClass="form-control" TextMode="Date"></asp:TextBox>
                     </div>
                         <div class="d-grid col-md-3 mx-auto">
-                            <asp:Button ID="consumptionButton" runat="server" OnClick="getConsumption" Text="Submit" CssClass="btn btn-primary btn-sm" />
+                            <asp:Button ID="consumptionButton" runat="server" OnClick="getConsumptionClicked" Text="Submit" CssClass="btn btn-primary btn-sm" />
                         </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-
-        <!-- planUsage-->
-          <div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-4">
-            <div class="card shadow">
-                <div class="card-header text-center bg-primary text-white">
-                    <h5>Display the usage of the account's active plans during the current month.</h5>
-                </div>
-                <div class="card-body d-grid">
-                        <div class="mb-3">
-                            <%-- <asp:Label runat="server" Text="Enter Mobile Number" CssClass="form-label"></asp:Label> --%>
-                            <asp:TextBox ID="inputMobile" runat="server" CssClass="form-control" placeholder="Enter mobile number "></asp:TextBox>
-                        </div>
-                        <div class="d-grid col-md-3 mx-auto ">
-                            <asp:Button ID="planUsageButton" runat="server" OnClick="getUsagePlan" Text="Query" CssClass="btn btn-primary btn-sm" />
-                        </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-                <!-- cashback transactions-->
-          <div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-4">
-            <div class="card shadow">
-                <div class="card-header text-center bg-primary text-white">
-                    <h5>Display all the cashback transactions related to the wallet of the input customer NationalID.</h5>
-                </div>
-                <div class="card-body d-grid">
-                        <div class="mb-3">
-                            <%-- <asp:Label runat="server" Text="Enter Mobile Number" CssClass="form-label"></asp:Label> --%>
-                            <asp:TextBox ID="inputNational" runat="server" CssClass="form-control" placeholder="Enter national ID "></asp:TextBox>
-                        </div>
-                        <div class="d-grid col-md-3 mx-auto ">
-                            <asp:Button ID="transactionsButton" runat="server" OnClick="getTransactions" Text="Query" CssClass="btn btn-primary btn-sm" />
-                        </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 
          <div class="container mt-5">
         <asp:GridView ID="GridView1" runat="server" CssClass="table table-striped table-bordered table-hover" AutoGenerateColumns="true">
