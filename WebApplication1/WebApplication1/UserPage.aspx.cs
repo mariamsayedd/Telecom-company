@@ -7,6 +7,7 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.Configuration;
+using System.Diagnostics.Eventing.Reader;
 
 namespace WebApplication1
 {
@@ -23,11 +24,34 @@ namespace WebApplication1
                 remainingBalance.Visible = false;
             if (dropDown.SelectedValue != "10")
                 extraAmount.Visible = false;
+            if (dropDown.SelectedValue != "13")
+            {
+                lastsubscribedfive.Visible = false;
+            }
+            if (dropDown.SelectedValue != "14")
+            {
+                initiatePayment.Visible = false;
+            }
+            if (dropDown.SelectedValue != "15")
+            {
+                paymentwalletcashback.Visible = false;
+            }
+            if (dropDown.SelectedValue != "16")
+            {
+               Initiate_balance_payment.Visible = false;
+            }
+            if (dropDown.SelectedValue != "17")
+            {
+                Redeem_voucher.Visible = false;
+            }
+
+
         }
         protected void list(object sender, EventArgs e)
         {
             int value = Int32.Parse(dropDown.SelectedValue);
             String query = string.Empty;
+
             switch (value)
             {
                 case 1:
@@ -60,16 +84,24 @@ namespace WebApplication1
                     getTop10();
                     break;
                 case 12:
+                    query = "SELECT * FROM allShops";
+                    callView(query);
                     break;
                 case 13:
+                    //lastsubscribedfive.Visible = true;
+                    getSubscribedPlansFiveMonths(sender, e);
                     break;
                 case 14:
+                    InitiatePayment(sender, e);
                     break;
                 case 15:
+                    PaymentWalletCashback(sender, e);
                     break;
                 case 16:
+                    RechargeBalance(sender, e);
                     break;
                 case 17:
+                    RedeemVoucher(sender, e);
                     break;
             }
         }
@@ -155,7 +187,7 @@ namespace WebApplication1
                     // Specify that this command is a stored procedure
                     command.CommandType = CommandType.StoredProcedure;
 
-                    command.Parameters.AddWithValue("@mobile_num",  mobileNo);
+                    command.Parameters.AddWithValue("@mobile_num", mobileNo);
 
                     SqlDataAdapter adapter = new SqlDataAdapter(command);
 
@@ -313,5 +345,283 @@ namespace WebApplication1
                 }
             }
         }
+        protected void getSubscribedPlansFiveMonths(object sender, EventArgs e)
+        {
+            lastsubscribedfive.Visible = true;
+            GridView1.DataSource = null;
+            GridView1.DataBind();
+            outputText.InnerText = "";
+            string query = "SELECT * FROM dbo.Subscribed_plans_5_Months(@MobileNo)";
+            string inputMobileNo = Subscribed_plans_5_Months_MobileNo.Text;
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@MobileNo", inputMobileNo);
+                    command.CommandType = CommandType.Text;
+
+                    try
+                    {
+                        connection.Open();
+                        SqlDataAdapter adapter = new SqlDataAdapter(command);
+                        DataTable dataTable = new DataTable();
+                        adapter.Fill(dataTable);
+
+                        if (!string.IsNullOrEmpty(inputMobileNo))
+                        {
+                            if (dataTable.Rows.Count > 0)
+                            {
+                                GridView1.DataSource = dataTable;
+                                GridView1.DataBind();
+                            }
+                            else
+                            {
+                                outputText.InnerText = "No records found for this mobile number.Please enter a valid mobile number";
+                            }
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error: " + ex.Message);
+                    }
+                }
+            }
+        }
+
+
+        protected void InitiatePayment(object sender, EventArgs e)
+        {
+            initiatePayment.Visible = true;
+            GridView1.DataSource = null;
+            GridView1.DataBind();
+            outputText.InnerText = "";
+            string InputMobileNo = Initiate_Payment_Mobile_No.Text;
+            string inputAmount = Initiate_Payment_amount.Text;
+            string InputPaymentMethod = Initiate_Payment_method.Text;
+            //string InputPlanIDText = Initiate_planid.Text;
+            int InputPlanID= int.Parse(Initiate_planid.Text);
+            //decimal inputAmount;
+
+           
+
+                // Try to parse the input as an integer
+                
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+                    if (!ExistsInDatabase("mobileNo", InputMobileNo, "customer_account"))
+                    {
+                        outputText.InnerText = "The mobile number does not exist in the database.";
+
+                    }
+
+                    else if (InputPaymentMethod != "cash" && InputPaymentMethod != "credit")
+                        outputText.InnerText = "The payment method can only be cash or credit.";
+                    else if (!ExistsInDatabase("planID", InputPlanID.ToString(), "Service_plan"))
+                    {
+                        outputText.InnerText = "The plan ID does not exist in the database.Please enter a valid plan id";
+
+                    }
+                    else
+                    {
+                        try
+                        {
+                            string storedProcedure = "Initiate_plan_payment";
+
+                            using (SqlCommand command = new SqlCommand(storedProcedure, connection))
+                            {
+                                // Specify that this command is a stored procedure
+                                command.CommandType = CommandType.StoredProcedure;
+
+                                // Add parameters to the stored procedure
+                                command.Parameters.AddWithValue("@MobileNo", InputMobileNo);
+                                command.Parameters.AddWithValue("@Amount", inputAmount);
+                                command.Parameters.AddWithValue("@PaymentMethod", InputPaymentMethod);
+                                command.Parameters.AddWithValue("@PlanID", InputPlanID);
+
+                                SqlDataAdapter adapter = new SqlDataAdapter(command);
+                                DataTable dataTable = new DataTable();
+                                connection.Open();
+                                adapter.Fill(dataTable);
+
+                                if (dataTable.Rows.Count > 0)
+                                {
+                                    outputText.InnerText = "Payment initiated successfully!";
+                                }
+                                else
+                                {
+                                    outputText.InnerText = "No records found.";
+                                }
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            // If an error occurs during database operation, display the error message
+                            outputText.InnerText = "An error occurred while processing your request. Please try again later.";
+                            Console.WriteLine("Error: " + ex.Message);
+                        }
+                    }
+                }
+        }
+
+
+
+
+        protected void PaymentWalletCashback(object sender, EventArgs e)
+        {
+            GridView1.DataSource = null;
+            GridView1.DataBind();
+            outputText.InnerText = "";
+            paymentwalletcashback.Visible = true;
+            string InputMobileNo = Payment_wallet_cashback_Mobile_No.Text;
+            string InputPaymentID = Payment_wallet_cashback_Payment_id.Text;
+            string InputBenefitID = Payment_wallet_cashback_Benefit_ID.Text;
+
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                
+                    string storedProcedure = "Payment_wallet_cashback";
+
+                    // Create SqlCommand object to execute the stored procedure
+                    using (SqlCommand command = new SqlCommand(storedProcedure, connection))
+
+                    {
+                        // Specify that this command is a stored procedure
+                        command.CommandType = CommandType.StoredProcedure;
+
+                        command.Parameters.AddWithValue("@mobile_num", InputMobileNo);
+                        command.Parameters.AddWithValue("@payment_id", InputPaymentID);
+                        command.Parameters.AddWithValue("@benefit_id", InputBenefitID);
+
+                        SqlDataAdapter adapter = new SqlDataAdapter(command);
+
+                        DataTable dataTable = new DataTable();
+
+                        try
+                        {
+                            connection.Open();
+                            adapter.Fill(dataTable);
+                            GridView1.DataSource = dataTable;
+                            GridView1.DataBind();
+
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Error: " + ex.Message);
+                        }
+                    }
+               
+            }
+        }
+        protected void RechargeBalance(object sender, EventArgs e)
+        {
+            GridView1.DataSource = null;
+            GridView1.DataBind();
+            outputText.InnerText = "";
+            Initiate_balance_payment.Visible = true;
+            string InputMobileNo = Initiate_balance_payment_MobileNo.Text;
+            string InputAmount = Initiate_balance_payment_amount.Text;
+            string InputPaymentMethod = Initiate_balance_payment_paymentMethod.Text;
+
+                using (SqlConnection connection = new SqlConnection(connectionString))
+                {
+               
+                    string storedProcedure = "Payment_wallet_cashback";
+
+                    // Create SqlCommand object to execute the stored procedure
+                    using (SqlCommand command = new SqlCommand(storedProcedure, connection))
+                    {
+                        // Specify that this command is a stored procedure
+                        command.CommandType = CommandType.StoredProcedure;
+
+                        command.Parameters.AddWithValue("@mobile_num", InputMobileNo);
+                        command.Parameters.AddWithValue("@amount", InputAmount);
+                        command.Parameters.AddWithValue("@payment_method", InputPaymentMethod);
+
+                        SqlDataAdapter adapter = new SqlDataAdapter(command);
+
+                        DataTable dataTable = new DataTable();
+
+                        try
+                        {
+                            connection.Open();
+                            adapter.Fill(dataTable);
+                            GridView1.DataSource = dataTable;
+                            GridView1.DataBind();
+
+                        }
+                        catch (Exception ex)
+                        {
+                            Console.WriteLine("Error: " + ex.Message);
+                        }
+                    }
+                
+            }
+        }
+
+        protected void RedeemVoucher(object sender, EventArgs e)
+        {
+            GridView1.DataSource = null;
+            GridView1.DataBind();
+            outputText.InnerText = "";
+            Redeem_voucher.Visible = true;
+            string InputMobileNo = Redeem_voucher_MobileNo.Text;
+            string InputVoucher = Redeem_voucher_voucherID.Text;
+            string InputPaymentMethod = Initiate_balance_payment_paymentMethod.Text;
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+
+                string storedProcedure = " Redeem_voucher_points";
+
+                // Create SqlCommand object to execute the stored procedure
+                using (SqlCommand command = new SqlCommand(storedProcedure, connection))
+                {
+                    // Specify that this command is a stored procedure
+                    command.CommandType = CommandType.StoredProcedure;
+
+                    command.Parameters.AddWithValue("@mobile_num", InputMobileNo);
+                    command.Parameters.AddWithValue("@voucherID", InputVoucher);
+
+                    SqlDataAdapter adapter = new SqlDataAdapter(command);
+
+                    DataTable dataTable = new DataTable();
+
+                    try
+                    {
+                        connection.Open();
+                        adapter.Fill(dataTable);
+                        GridView1.DataSource = dataTable;
+                        GridView1.DataBind();
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error: " + ex.Message);
+                    }
+                }
+
+            }
+        }
+
+        private bool ExistsInDatabase(string columnName, string value, string tableName)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = $"SELECT COUNT(*) FROM {tableName} WHERE {columnName} = @value";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@value", value);
+                    connection.Open();
+                    int count = (int)command.ExecuteScalar();
+                    return count > 0; // If the count is greater than 0, the value exists
+                }
+            }
+        }
+
     }
-}
+    } 
+
+
+   

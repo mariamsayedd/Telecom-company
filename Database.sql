@@ -1024,5 +1024,38 @@ SELECT nationalID FROM customer_account WHERE mobileNo ='01234567890'
 SELECT * FROM allBenefits
 SELECT * FROM Voucher
 select * from shop
+insert into shop values('l','l')
+select * from allShops
 
+-- Insert into customer_profile
+INSERT INTO customer_profile 
+VALUES 
+(101, 'John', 'Doe', 'john.doe@example.com', '123 Elm Street', '1985-05-15'),
+(102, 'Jane', 'Smith', 'jane.smith@example.com', '456 Oak Avenue', '1990-08-22');
+
+
+-- Corrected INSERT statement
+INSERT INTO customer_account 
+VALUES
+('01234567890', 'password123', 50,'postpaid', '2020-01-01','active', 0, 101),
+('09876543210', 'securePass', 30, 'prepaid', '2021-06-15','active', 0, 102);
+
+-- Insert into Service_plan
+INSERT INTO Service_plan(name, price, SMS_offered, minutes_offered, data_offered, description)
+VALUES
+('Basic Plan', 10, 100, 50, 1, 'Basic'),
+('Standard Plan', 20, 300, 100, 5, 'Standard'),
+('Premium Plan', 30, 500, 200, 10, 'Premium');
+
+-- Insert into Subscription
+INSERT INTO Subscription(mobileNo, planID, subscription_date, status)
+VALUES
+('01234567890', 1, '2024-07-01', 'active'), -- Within 5 months
+('01234567890', 2, '2024-02-15', 'active'), -- Older than 5 months
+('09876543210', 3, '2024-09-01', 'active'); -- Within 5 months
+
+select * from dbo.Subscribed_plans_5_Months ('09876543210')
+
+ALTER TABLE customer_account CHECK CONSTRAINT ALL;
+ALTER TABLE customer_account NOCHECK CONSTRAINT ALL;
 
