@@ -1,1 +1,2 @@
 .vs
+./WebApplication1/.vs/
