@@ -280,6 +280,12 @@
     </div>
 </div>
 
+        <!-- Alert Placeholder -->
+        <div class="alert-container mt-3">
+        <asp:Literal ID="AlertPlaceholder" runat="server"></asp:Literal>
+       </div>
+
+
          <div class="container mt-5">
         <asp:GridView ID="GridView1" runat="server" CssClass="table table-striped table-bordered table-hover" AutoGenerateColumns="true">
         </asp:GridView>

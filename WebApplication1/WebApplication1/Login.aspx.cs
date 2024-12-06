@@ -77,27 +77,13 @@ namespace WebApplication1
 
         private void ShowAlert(string message, string alertType)
         {
-            if (message == "Welcome back Admin")
-            {
-                string alertHtml = $@"
-                 <div class='alert alert-{alertType} alert-dismissible fade show' role='alert'>
-                     <strong>Login Successful!</strong> {message}
-                     <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-                 </div>";
+            string alertHtml = $@"
+                <div class='alert alert-{alertType} alert-dismissible fade show' role='alert'>
+                    <strong>{(alertType == "success" ? "Success!" : "Warning!")}</strong> {message}
+                    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                </div>";
 
-                AlertPlaceholder.Text = alertHtml;
-            }
-            else
-            {
-                string alertHtml = $@"
-                 <div class='alert alert-{alertType} alert-dismissible fade show' role='alert'>
-                     <strong>{(alertType == "success" ? "Success!" : "Warning!")}</strong> {message}
-                     <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-                 </div>";
-
-                AlertPlaceholder.Text = alertHtml;
-            }
+            AlertPlaceholder.Text = alertHtml;   
         }
-
     }
 }
