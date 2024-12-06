@@ -551,11 +551,14 @@ namespace WebApplication1
 
         protected void RedeemVoucher(object sender, EventArgs e)
         {
+
             GridView1.DataSource = null;
             GridView1.DataBind();
             outputText.InnerText = "";
             Redeem_voucher.Visible = true;
         }
+       
+        
         protected void RedeemVoucherClicked(object sender, EventArgs a)
         {
             //string InputMobileNo = Redeem_voucher_MobileNo.Text;
@@ -573,7 +576,6 @@ namespace WebApplication1
                 {
                     // Specify that this command is a stored procedure
                     command.CommandType = CommandType.StoredProcedure;
-
                     command.Parameters.AddWithValue("@mobile_num", mobileNo);
                     command.Parameters.AddWithValue("@voucher_id", InputVoucher);
 

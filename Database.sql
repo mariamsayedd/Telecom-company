@@ -1013,8 +1013,6 @@ insert into customer_profile values(0,'mohamed','abdelaziz','mada','tagmo3','200
 insert into customer_account values('01234567890','test',0,'postpaid','2024/11/11','active',0,0)
 insert into benefits values('test','2024/11/11','active','01234567890')
 insert into Technical_support_ticket values('01234567890','test',1,'Open')
-INSERT INTO voucher 
-VALUES (150, '2025-11-11', 151, '01234567890', CONVERT(date, GETDATE()),1)
 insert into shop values ('test','test')
 insert into Payment values(20,GETDATE(),'cash','successful','01234567890')
 select * from customer_account
@@ -1076,8 +1074,25 @@ Exec Payment_wallet_cashback @mobile_num = '01234567890',@payment_id = 1, @benef
 insert into Cashback
 values(1,1,50,'2024-12-05')
 
+insert into shop
+values('m','m')
+
 select * from Payment
 select * from customer_account
 
-Exec Redeem_voucher_points @mobile_num = '01234567890', @voucher_id = 1
+Exec Redeem_voucher_points @mobile_num = '01234567890', @voucher_id = 2
 
+INSERT INTO Voucher 
+VALUES 
+(100, '2024-1-10', 10, '01234567890', '2024-12-01', 1),
+(100, '2025-01-01', 30, '01234567890', '2025-12-01', 2) 
+
+select * from voucher
+
+UPDATE customer_account 
+SET points = 50 
+WHERE mobileNo = '01234567890';
+Select v.points 
+    from Voucher v 
+    where v.voucherID =2
+      and v.expiry_date > CURRENT_TIMESTAMP
