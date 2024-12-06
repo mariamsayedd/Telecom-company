@@ -159,6 +159,150 @@ namespace WebApplication1
         protected global::System.Web.UI.WebControls.Button consumptionButton;
 
         /// <summary>
+        /// initiatePayment control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl initiatePayment;
+
+        /// <summary>
+        /// Initiate_Payment_amount control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox Initiate_Payment_amount;
+
+        /// <summary>
+        /// Initiate_Payment_method control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox Initiate_Payment_method;
+
+        /// <summary>
+        /// Initiate_planid control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox Initiate_planid;
+
+        /// <summary>
+        /// Initiate_Payment_submit control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button Initiate_Payment_submit;
+
+        /// <summary>
+        /// paymentwalletcashback control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl paymentwalletcashback;
+
+        /// <summary>
+        /// Payment_wallet_cashback_Payment_id control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox Payment_wallet_cashback_Payment_id;
+
+        /// <summary>
+        /// Payment_wallet_cashback_Benefit_ID control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox Payment_wallet_cashback_Benefit_ID;
+
+        /// <summary>
+        /// Payment_wallet_cashback_submit control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button Payment_wallet_cashback_submit;
+
+        /// <summary>
+        /// Initiate_balance_payment control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Initiate_balance_payment;
+
+        /// <summary>
+        /// Initiate_balance_payment_amount control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox Initiate_balance_payment_amount;
+
+        /// <summary>
+        /// Initiate_balance_payment_paymentMethod control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox Initiate_balance_payment_paymentMethod;
+
+        /// <summary>
+        /// Initiate_balance_payment_submit control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button Initiate_balance_payment_submit;
+
+        /// <summary>
+        /// Redeem_voucher control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl Redeem_voucher;
+
+        /// <summary>
+        /// Redeem_voucher_voucherID control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox Redeem_voucher_voucherID;
+
+        /// <summary>
+        /// Redeem_voucher_submit control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button Redeem_voucher_submit;
+
+        /// <summary>
         /// GridView1 control.
         /// </summary>
         /// <remarks>
