@@ -7,7 +7,6 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Web.Configuration;
-using System.Diagnostics.Eventing.Reader;
 
 namespace WebApplication1
 {
@@ -19,12 +18,33 @@ namespace WebApplication1
         protected void Page_Load(object sender, EventArgs e)
         {
             mobileNo = Request.QueryString["mobileNo"];
-           // mobileNo = "01234567890";
+            if (mobileNo == null)
+            {
+                bodyTag.InnerHtml = "<h1 class=\"mb-3\">ACCESS FORBIDDEN!!!!!</h1>";
+            }
+            else
+            {
+                string query = "SELECT nationalID FROM customer_account WHERE mobileNo = " + mobileNo;
+                SqlDataAdapter adapter = new SqlDataAdapter(query, connectionString);
+                DataTable dataTable = new DataTable();
+                adapter.Fill(dataTable);
+                int nationalID = int.Parse(dataTable.Rows[0][0].ToString());
+                query = "SELECT first_name FROM customer_profile WHERE nationalID = " + nationalID;
+                adapter = new SqlDataAdapter(query, connectionString);
+                dataTable = new DataTable();
+                adapter.Fill(dataTable);
+                String name = dataTable.Rows[0][0].ToString();
+                Response.Write($"Hello {name}");
+
+            }
+
+            //mobileNo = "01234567890";
+            if (dropDown.SelectedValue != "2")
+                getconsume.Visible = false;
             if (dropDown.SelectedValue != "9")
                 remainingBalance.Visible = false;
             if (dropDown.SelectedValue != "10")
                 extraAmount.Visible = false;
- 
             if (dropDown.SelectedValue != "14")
             {
                 initiatePayment.Visible = false;
@@ -41,25 +61,28 @@ namespace WebApplication1
             {
                 Redeem_voucher.Visible = false;
             }
-
-
         }
         protected void list(object sender, EventArgs e)
         {
             int value = Int32.Parse(dropDown.SelectedValue);
             String query = string.Empty;
-
             switch (value)
             {
                 case 1:
+                    query = "SELECT * FROM allServicePlans";
+                    callView(query);
                     break;
                 case 2:
+                    getConsumption();
                     break;
                 case 3:
+                    getOfferedPlans();
                     break;
                 case 4:
+                    getUsagePlan();
                     break;
                 case 5:
+                    getTransactions();
                     break;
                 case 6:
                     query = "SELECT * FROM allBenefits";
@@ -85,7 +108,6 @@ namespace WebApplication1
                     callView(query);
                     break;
                 case 13:
-                    //lastsubscribedfive.Visible = true;
                     getSubscribedPlansFiveMonths(sender, e);
                     break;
                 case 14:
@@ -102,14 +124,103 @@ namespace WebApplication1
                     break;
             }
         }
-        protected void callView(String query)
+
+
+        protected void getConsumption()
         {
             GridView1.DataSource = null;
             GridView1.DataBind();
             outputText.InnerText = "";
-            SqlDataAdapter adapter = new SqlDataAdapter(query, connectionString);
+            getconsume.Visible = true;
+        }
+
+        protected void getConsumptionClicked(object sender, EventArgs e)
+        {
+
+            string query = "SELECT * FROM dbo.Consumption(@Plan_name, @start_date, @end_date)";
+            String startDate = consumption2.Text;
+            String endDate = consumption3.Text;
+            String serviceName = consumption1.Text;
+
+            if (string.IsNullOrEmpty(startDate) || string.IsNullOrEmpty(endDate) || string.IsNullOrEmpty(serviceName))
+                outputText.InnerText = "Please fill in the required fields";
+            else
+            {
+                if ((!ExistsInDatabaseString("name", serviceName, "Service_plan")))
+                    outputText.InnerText = "The specified plan name does not exist.Please enter a valid name";
+                else
+                {
+                    SqlCommand command = new SqlCommand(query, connection);
+                    command.Parameters.AddWithValue("@Plan_name", serviceName);
+                    command.Parameters.AddWithValue("@start_date", startDate);
+                    command.Parameters.AddWithValue("@end_date", endDate);
+
+                    SqlDataAdapter adapter = new SqlDataAdapter(command);
+                    DataTable dataTable = new DataTable();
+                    adapter.Fill(dataTable);
+                    GridView gv = new GridView();
+                    GridView1.DataSource = dataTable;
+                    GridView1.DataBind();
+                    if (dataTable.Rows.Count > 0)
+                    {
+                        GridView1.DataSource = dataTable;
+                        GridView1.DataBind();
+                    }
+                    else
+                    {
+                        outputText.InnerText = "No consumption within specified duration";
+                    }
+
+                }
+            }
+        }
+
+        protected void getOfferedPlans()
+        {
+            GridView1.DataSource = null;
+            GridView1.DataBind();
+            outputText.InnerText = "";
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string storedProcedure = "Unsubscribed_Plans";
+
+                using (SqlCommand command = new SqlCommand(storedProcedure, connection))
+                {
+                    command.CommandType = CommandType.StoredProcedure;
+                    command.Parameters.AddWithValue("@mobile_num", mobileNo);
+                    SqlDataAdapter adapter = new SqlDataAdapter(command);
+                    DataTable dataTable = new DataTable();
+                    connection.Open();
+                    adapter.Fill(dataTable);
+                    GridView1.DataSource = dataTable;
+                    GridView1.DataBind();
+                    if (dataTable.Rows.Count > 0)
+                    {
+                        GridView1.DataSource = dataTable;
+                        GridView1.DataBind();
+                    }
+                    else
+                    {
+                        outputText.InnerText = "No unsubscribed plans";
+                    }
+
+                }
+            }
+        }
+
+        protected void getUsagePlan()
+        {
+            GridView1.DataSource = null;
+            GridView1.DataBind();
+            outputText.InnerText = "";
+            string query = "SELECT * FROM dbo.Usage_Plan_CurrentMonth(@MobileNo)";
+            SqlCommand command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@MobileNo", mobileNo);
+            SqlDataAdapter adapter = new SqlDataAdapter(command);
             DataTable dataTable = new DataTable();
             adapter.Fill(dataTable);
+            GridView gv = new GridView();
             GridView1.DataSource = dataTable;
             GridView1.DataBind();
             if (dataTable.Rows.Count > 0)
@@ -119,18 +230,67 @@ namespace WebApplication1
             }
             else
             {
-                outputText.InnerText = "No records in the table.";
+                outputText.InnerText = "No active plans in the current month";
             }
-
         }
-        protected void getUnresolvedTickets()
+        protected void getTransactions()
         {
-            // Set the DataSource to null and rebind the GridView
             GridView1.DataSource = null;
             GridView1.DataBind();
             outputText.InnerText = "";
-            //remainingBalance.Visible = false;
-            //extraAmount.Visible = false;
+            string query = "SELECT nationalID FROM customer_account WHERE mobileNo = " + mobileNo;
+            SqlDataAdapter adapter = new SqlDataAdapter(query, connectionString);
+            DataTable dataTable = new DataTable();
+            adapter.Fill(dataTable);
+            int nationalID = int.Parse(dataTable.Rows[0][0].ToString());
+
+            query = "SELECT * FROM dbo.Cashback_Wallet_Customer(@NationalID)";
+            SqlCommand command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@NationalID", nationalID);
+
+            adapter = new SqlDataAdapter(command);
+            dataTable = new DataTable();
+            adapter.Fill(dataTable);
+            GridView gv = new GridView();
+            GridView1.DataSource = dataTable;
+            GridView1.DataBind();
+            if (dataTable.Rows.Count > 0)
+            {
+                GridView1.DataSource = dataTable;
+                GridView1.DataBind();
+            }
+            else
+            {
+                outputText.InnerText = "No cashback transactions for input wallet";
+            }
+        }
+
+        protected void callView(String query)
+        {
+            GridView1.DataSource = null;
+            GridView1.DataBind();
+            outputText.InnerText = "";
+            SqlDataAdapter adapter = new SqlDataAdapter(query, connectionString);
+            DataTable dataTable = new DataTable();
+            adapter.Fill(dataTable);
+
+            GridView1.DataSource = dataTable;
+            GridView1.DataBind();
+            if (dataTable.Rows.Count > 0)
+            {
+                GridView1.DataSource = dataTable;
+                GridView1.DataBind();
+            }
+            else
+            {
+                outputText.InnerText = "No records in the table yet.";
+            }
+        }
+        protected void getUnresolvedTickets()
+        {
+            GridView1.DataSource = null;
+            GridView1.DataBind();
+            outputText.InnerText = "";
             string query = "SELECT nationalID FROM customer_account WHERE mobileNo = " + mobileNo;
             SqlDataAdapter adapter = new SqlDataAdapter(query, connectionString);
             DataTable dataTable = new DataTable();
@@ -141,20 +301,14 @@ namespace WebApplication1
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 string storedProcedure = "Ticket_Account_Customer";
-
-                // Create SqlCommand object to execute the stored procedure
                 using (SqlCommand command = new SqlCommand(storedProcedure, connection))
                 {
-                    // Specify that this command is a stored procedure
                     command.CommandType = CommandType.StoredProcedure;
 
-                    // Add the parameter @NID
                     command.Parameters.AddWithValue("@NID", nationalID);
 
-                    // Create SqlDataAdapter to fill DataTable
                     SqlDataAdapter adapter1 = new SqlDataAdapter(command);
 
-                    // Create DataTable to hold the result
                     DataTable dataTable1 = new DataTable();
 
                     try
@@ -173,12 +327,9 @@ namespace WebApplication1
         }
         protected void getHighestVoucher()
         {
-            // Set the DataSource to null and rebind the GridView
             GridView1.DataSource = null;
             GridView1.DataBind();
             outputText.InnerText = "";
-            //remainingBalance.Visible = false;
-            //extraAmount.Visible = false;
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -221,40 +372,43 @@ namespace WebApplication1
         protected void getRemainingBalanceClicked(object sender, EventArgs e)
         {
             String serviceName = servicePlanRem.Text;
-            try
+            if (string.IsNullOrEmpty(serviceName))
+                outputText.InnerText = "Please fill in the required field";
+            else if ((!ExistsInDatabaseString("name", serviceName, "Service_plan")))
+                outputText.InnerText = "The specified plan name does not exist.Please enter a valid name";
+            else
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                try
                 {
-                    connection.Open();
-
-                    // SQL query to call the function
-                    string query = "SELECT dbo.Remaining_plan_amount(@mobile_num, @plan_name)";
-
-                    using (SqlCommand command = new SqlCommand(query, connection))
+                    using (SqlConnection connection = new SqlConnection(connectionString))
                     {
-                        // Add parameters for the function
-                        command.Parameters.AddWithValue("@mobile_num", mobileNo);
-                        command.Parameters.AddWithValue("@plan_name", serviceName);
+                        connection.Open();
 
-                        // Execute the command and get the result
-                        object result = command.ExecuteScalar();
+                        string query = "SELECT dbo.Remaining_plan_amount(@mobile_num, @plan_name)";
 
-                        // Check if result is not null and display
-                        if (result != null && result != DBNull.Value)
+                        using (SqlCommand command = new SqlCommand(query, connection))
                         {
-                            int remainingAmount = Convert.ToInt32(result);
-                            outputText.InnerText = $"Remaining plan amount: {remainingAmount}";
-                        }
-                        else
-                        {
-                            outputText.InnerText = "No result for the given plan name.";
+                            command.Parameters.AddWithValue("@mobile_num", mobileNo);
+                            command.Parameters.AddWithValue("@plan_name", serviceName);
+
+                            object result = command.ExecuteScalar();
+
+                            if (result != null && result != DBNull.Value)
+                            {
+                                int remainingAmount = Convert.ToInt32(result);
+                                outputText.InnerText = $"Remaining plan amount: {remainingAmount}";
+                            }
+                            else
+                            {
+                                outputText.InnerText = "No result for the given plan name.";
+                            }
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                ShowAlert($"Error: {ex.Message}", "warning");
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
+                }
             }
         }
 
@@ -268,61 +422,59 @@ namespace WebApplication1
         protected void getExtraAmountClicked(object sender, EventArgs e)
         {
             String serviceName = servicePlanExtra.Text;
-            try
+            if (string.IsNullOrEmpty(serviceName))
+                outputText.InnerText = "Please fill in the required field";
+            else if ((!ExistsInDatabaseString("name", serviceName, "Service_plan")))
+                outputText.InnerText = "The specified plan name does not exist.Please enter a valid name";
+            else
             {
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                try
                 {
-                    connection.Open();
-
-                    // SQL query to call the function
-                    string query = "SELECT dbo.Extra_plan_amount(@mobile_num, @plan_name)";
-
-                    using (SqlCommand command = new SqlCommand(query, connection))
+                    using (SqlConnection connection = new SqlConnection(connectionString))
                     {
-                        // Add parameters for the function
-                        command.Parameters.AddWithValue("@mobile_num", mobileNo);
-                        command.Parameters.AddWithValue("@plan_name", serviceName);
+                        connection.Open();
 
-                        // Execute the command and get the result
-                        object result = command.ExecuteScalar();
+                        string query = "SELECT dbo.Extra_plan_amount(@mobile_num, @plan_name)";
 
-                        // Check if result is not null and display
-                        if (result != null && result != DBNull.Value)
+                        using (SqlCommand command = new SqlCommand(query, connection))
                         {
-                            int extraAmount = Convert.ToInt32(result);
-                            ShowAlert($"Extra plan amount: {extraAmount}", "success");
-                        }
-                        else
-                        {
-                            ShowAlert("No result for the given plan name.", "warning");
+                            command.Parameters.AddWithValue("@mobile_num", mobileNo);
+                            command.Parameters.AddWithValue("@plan_name", serviceName);
+
+                            object result = command.ExecuteScalar();
+
+                            if (result != null && result != DBNull.Value)
+                            {
+                                int extraAmount = Convert.ToInt32(result);
+                                outputText.InnerText = $"Extra plan amount: {extraAmount}";
+                            }
+                            else
+                            {
+                                outputText.InnerText = "No result for the given plan name.";
+                            }
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                ShowAlert($"Error: {ex.Message}", "warning");
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
+                }
             }
         }
 
 
         protected void getTop10()
         {
-            // Set the DataSource to null and rebind the GridView
             GridView1.DataSource = null;
             GridView1.DataBind();
             outputText.InnerText = "";
-            //remainingBalance.Visible = false;
-            //extraAmount.Visible = false;
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 string storedProcedure = "Top_Successful_Payments";
 
-                // Create SqlCommand object to execute the stored procedure
                 using (SqlCommand command = new SqlCommand(storedProcedure, connection))
                 {
-                    // Specify that this command is a stored procedure
                     command.CommandType = CommandType.StoredProcedure;
 
                     command.Parameters.AddWithValue("@mobile_num", mobileNo);
@@ -337,55 +489,62 @@ namespace WebApplication1
                         adapter.Fill(dataTable);
                         GridView1.DataSource = dataTable;
                         GridView1.DataBind();
+                        if (dataTable.Rows.Count > 0)
+                        {
+                            GridView1.DataSource = dataTable;
+                            GridView1.DataBind();
+                        }
+                        else
+                        {
+                            outputText.InnerText = "No payments on this account yet.";
+                        }
+
 
                     }
                     catch (Exception ex)
                     {
-                        ShowAlert("Error: " + ex.Message, "warning");
+                        Console.WriteLine("Error: " + ex.Message);
                     }
                 }
             }
         }
         protected void getSubscribedPlansFiveMonths(object sender, EventArgs e)
         {
-            //lastsubscribedfive.Visible = true;
             GridView1.DataSource = null;
             GridView1.DataBind();
             outputText.InnerText = "";
             string query = "SELECT * FROM dbo.Subscribed_plans_5_Months(@mobile_num)";
-            //string inputMobileNo = Subscribed_plans_5_Months_MobileNo.Text;
-
-                using (SqlConnection connection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    using (SqlCommand command = new SqlCommand(query, connection))
+                    command.Parameters.AddWithValue("@mobile_num", mobileNo);
+                    command.CommandType = CommandType.Text;
+
+                    try
                     {
-                        command.Parameters.AddWithValue("@mobile_num", mobileNo);
-                        command.CommandType = CommandType.Text;
+                        connection.Open();
+                        SqlDataAdapter adapter = new SqlDataAdapter(command);
+                        DataTable dataTable = new DataTable();
+                        adapter.Fill(dataTable);
 
-                        try
+                        if (dataTable.Rows.Count > 0)
                         {
-                            connection.Open();
-                            SqlDataAdapter adapter = new SqlDataAdapter(command);
-                            DataTable dataTable = new DataTable();
-                            adapter.Fill(dataTable);
-
-                            if (dataTable.Rows.Count > 0)
-                            {
-                                GridView1.DataSource = dataTable;
-                                GridView1.DataBind();
-                            }
-                            else
-                            {
-                                ShowAlert("No subscribed plans in the past 5 months", "warning");
-                            }
-
+                            GridView1.DataSource = dataTable;
+                            GridView1.DataBind();
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            ShowAlert("Error: " + ex.Message, "warning");
+                            outputText.InnerText = "No subscribed plans in the past 5 months";
                         }
+
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Error: " + ex.Message);
                     }
                 }
+            }
         }
 
 
@@ -404,7 +563,7 @@ namespace WebApplication1
 
 
             if (string.IsNullOrEmpty(inputAmountText) || string.IsNullOrEmpty(InputPaymentMethod) || string.IsNullOrEmpty(InputPlanIDText))
-                ShowAlert("Please fill in all required fields", "warning");
+                outputText.InnerText = "Please fill in all required fields";
             else
             {
                 decimal inputAmount;
@@ -415,25 +574,24 @@ namespace WebApplication1
                 }
                 catch (FormatException)
                 {
-                    ShowAlert("Please enter a valid amount with at most 1 decimal place", "warning");
+                    outputText.InnerText = "Please enter a valid amount with at most 1 decimal place";
                     return;
                 }
 
-                // Try to parse InputPlanIDText to an integer
                 try
                 {
                     InputPlanID = int.Parse(InputPlanIDText);
                 }
                 catch (FormatException)
                 {
-                    ShowAlert("Please enter a valid plan ID.", "warning");
+                    outputText.InnerText = "Please enter a valid plan ID.";
                     return;
                 }
 
                 if (InputPaymentMethod != "cash" && InputPaymentMethod != "credit")
-                    ShowAlert("The payment method can only be cash or credit.", "warning");
+                    outputText.InnerText = "The payment method can only be cash or credit.";
                 else if ((!ExistsInDatabaseInt("planID", InputPlanID, "Service_plan")))
-                    ShowAlert("The specified plan ID does not exist.Please enter a valid ID", "warning");
+                    outputText.InnerText = "The specified plan ID does not exist.Please enter a valid ID";
                 else
                 {
                     using (SqlConnection connection = new SqlConnection(connectionString))
@@ -455,13 +613,13 @@ namespace WebApplication1
                                 DataTable dataTable = new DataTable();
                                 connection.Open();
                                 adapter.Fill(dataTable);
-                                ShowAlert("Subscription has been successfully renewed!", "success");
+                                outputText.InnerText = "Subscription has been successfully renewed!";
 
                             }
                         }
                         catch (Exception ex)
                         {
-                            ShowAlert("Error: " + ex.Message, "warning");
+                            outputText.InnerText = "Error: " + ex.Message;
                         }
                     }
 
@@ -479,15 +637,15 @@ namespace WebApplication1
         }
         protected void PaymentWalletCashbackClicked(object sender, EventArgs e)
         {
-            
-            string InputPaymentIDText =Payment_wallet_cashback_Payment_id.Text;
-            string InputBenefitIDText =Payment_wallet_cashback_Benefit_ID.Text;
+
+            string InputPaymentIDText = Payment_wallet_cashback_Payment_id.Text;
+            string InputBenefitIDText = Payment_wallet_cashback_Benefit_ID.Text;
 
             if (string.IsNullOrEmpty(InputPaymentIDText) || string.IsNullOrEmpty(InputBenefitIDText))
-                ShowAlert("Please fill in all required fields", "warning");
+                outputText.InnerText = "Please fill in all required fields";
             else
-            { 
-            
+            {
+
                 int InputPaymentID;
                 int InputBenefitID;
                 try
@@ -496,16 +654,16 @@ namespace WebApplication1
                 }
                 catch (FormatException)
                 {
-                    ShowAlert("Please enter a valid payment ID", "warning");                   
+                    outputText.InnerText = "Please enter a valid payment ID";
                     return;
                 }
                 try
                 {
-                    InputBenefitID = int.Parse(InputBenefitIDText) ;
+                    InputBenefitID = int.Parse(InputBenefitIDText);
                 }
                 catch (FormatException)
                 {
-                    ShowAlert("Please enter a valid benefit ID.", "warning");
+                    outputText.InnerText = "Please enter a valid benefit ID.";
                     return;
                 }
 
@@ -518,11 +676,9 @@ namespace WebApplication1
 
                         string storedProcedure = "Payment_wallet_cashback";
 
-                        // Create SqlCommand object to execute the stored procedure
                         using (SqlCommand command = new SqlCommand(storedProcedure, connection))
 
                         {
-                            // Specify that this command is a stored procedure
                             command.CommandType = CommandType.StoredProcedure;
 
                             command.Parameters.AddWithValue("@mobile_num", mobileNo);
@@ -539,11 +695,11 @@ namespace WebApplication1
                                 adapter.Fill(dataTable);
                                 GridView1.DataSource = dataTable;
                                 GridView1.DataBind();
-                                ShowAlert("Cashback calculated and wallet's balance updated successfully!", "success");
+                                outputText.InnerText = "Cashback calculated and wallet's balance updated successfully!";
                             }
                             catch (Exception ex)
                             {
-                                ShowAlert("Error" + ex.Message, "warning");
+                                Console.WriteLine("Error: " + ex.Message);
                             }
                         }
                     }
@@ -581,7 +737,7 @@ namespace WebApplication1
                 catch (FormatException)
                 {
                     outputText.InnerText = "Please enter a valid amount.";
-                    return; 
+                    return;
                 }
 
                 using (SqlConnection connection = new SqlConnection(connectionString))
@@ -615,7 +771,7 @@ namespace WebApplication1
                             }
                             catch (Exception ex)
                             {
-                                ShowAlert("Error" + ex.Message, "warning");
+                                Console.WriteLine("Error: " + ex.Message);
                             }
                         }
 
@@ -640,7 +796,7 @@ namespace WebApplication1
 
             if (string.IsNullOrEmpty(InputVoucherText))
                 outputText.InnerText = "Please fill in the required field";
-            else 
+            else
             {
                 int InputVoucher;
                 try
@@ -682,7 +838,7 @@ namespace WebApplication1
                             }
                             catch (Exception ex)
                             {
-                                ShowAlert("Error" + ex.Message, "warning");
+                                Console.WriteLine("Error: " + ex.Message);
                             }
                         }
                     }
@@ -722,20 +878,13 @@ namespace WebApplication1
 
             }
         }
-
-        private void ShowAlert(string message, string alertType)
+        protected void signOut(object sender, EventArgs e)
         {
-                string alertHtml = $@"
-         <div class='alert alert-{alertType} alert-dismissible fade show' role='alert'>
-             <strong>{(alertType == "success" ? "Success!" : "Warning!")}</strong> {message}
-             <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-         </div>";
-
-                AlertPlaceholder.Text = alertHtml;
-            
+            Response.Redirect("Login.aspx");
         }
     }
 }
 
 
-   
+
+

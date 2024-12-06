@@ -15,6 +15,15 @@ namespace WebApplication1
     {
 
         /// <summary>
+        /// bodyTag control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl bodyTag;
+
+        /// <summary>
         /// form1 control.
         /// </summary>
         /// <remarks>
@@ -22,6 +31,15 @@ namespace WebApplication1
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.HtmlControls.HtmlForm form1;
+
+        /// <summary>
+        /// SignOut control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button SignOut;
 
         /// <summary>
         /// dropDown control.
@@ -96,31 +114,49 @@ namespace WebApplication1
         protected global::System.Web.UI.WebControls.Button extraAmountButton;
 
         /// <summary>
-        /// lastsubscribedfive control.
+        /// getconsume control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.HtmlControls.HtmlGenericControl lastsubscribedfive;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl getconsume;
 
         /// <summary>
-        /// Subscribed_plans_5_Months_MobileNo control.
+        /// consumption1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox Subscribed_plans_5_Months_MobileNo;
+        protected global::System.Web.UI.WebControls.TextBox consumption1;
 
         /// <summary>
-        /// Subscribed_plans_5_Months_MobileNo_submit control.
+        /// consumption2 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button Subscribed_plans_5_Months_MobileNo_submit;
+        protected global::System.Web.UI.WebControls.TextBox consumption2;
+
+        /// <summary>
+        /// consumption3 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox consumption3;
+
+        /// <summary>
+        /// consumptionButton control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button consumptionButton;
 
         /// <summary>
         /// initiatePayment control.
@@ -265,15 +301,6 @@ namespace WebApplication1
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button Redeem_voucher_submit;
-
-        /// <summary>
-        /// AlertPlaceholder control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Literal AlertPlaceholder;
 
         /// <summary>
         /// GridView1 control.
