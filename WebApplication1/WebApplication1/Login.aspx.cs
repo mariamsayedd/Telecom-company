@@ -47,7 +47,7 @@ namespace WebApplication1
                 // Convert the result to a Boolean
                 bool isValid = result != null && Convert.ToBoolean(result);
                 bool isAdmin = false;
-                if (mobileNo == "12233334444" && pass == "admin") {
+                if (mobileNo == "admin" && pass == "admin") {
                     isValid = true;
                     isAdmin = true; 
                 }   
@@ -60,8 +60,8 @@ namespace WebApplication1
                         Response.Redirect("AdminPage.aspx");
                     }
                     // Redirect or perform additional actions
-                    else { 
-                    // should be redirected to the customer page
+                    else {
+                        Response.Redirect($"UserPage.aspx?mobileNo={mobileNo}");
                     }
                 }
                 else
