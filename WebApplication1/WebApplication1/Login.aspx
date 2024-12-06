@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Login.aspx.cs" Inherits="WebApplication1.Login" %>
+<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Login.aspx.cs" Inherits="WebApplication1.Login" %>
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -43,6 +43,20 @@
             width: 30px; /* Adjust the size of the image */
             height: 30px;
         }
+           .alert-container {
+                position: fixed;
+                top: 25%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                z-index: 1050; /* Ensures it's above most elements */
+                width: 50%; /* Adjust width as needed */
+                max-width: 500px; /* Limit the maximum width */
+                padding: 1rem;
+                }
+
+                .alert-container.show {
+                display: block; /* Make visible when needed */
+            }
 
     </style>
 </head>
@@ -87,6 +101,13 @@
                 </div>
             </div>
         </div>
+
+
+        <!-- Alert Placeholder -->
+            <div class="alert-container mt-3">
+            <asp:Literal ID="AlertPlaceholder" runat="server"></asp:Literal>
+        </div>
+
 
            
     </form>
