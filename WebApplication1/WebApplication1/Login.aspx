@@ -72,7 +72,6 @@
                     <div class="card shadow-sm">
                         <div class="card-body">
                             <h3 class="text-center mb-4">Please Login</h3>
-                            <!-- Mobile Number -->
 
 
 
@@ -81,12 +80,10 @@
                                 <label for="username" class="form-label">Mobile Number</label>
                                 <asp:TextBox ID="username" CssClass="form-control" runat="server" placeholder="Enter your mobile number"></asp:TextBox>
                             </div>
-                            <!-- Password -->
                             <div class="mb-3">
                                 <label for="password" class="form-label">Password</label>
                                 <asp:TextBox ID="password" CssClass="form-control" runat="server" placeholder="Enter your password" TextMode="Password"></asp:TextBox>
                             </div>
-                            <!-- Submit Button -->
                             <div class="d-grid">
                                 <asp:Button ID="Button1" runat="server" OnClick="login" Text="Sign In" CssClass="btn btn-primary btn-block" />
                             </div>

@@ -106,7 +106,7 @@ namespace WebApplication1
             }
         }
 
-        protected void smsOffers_2_3a(object sender, EventArgs e)   // try test data '01234567898' (offerID 10    benefitID 15)
+        protected void smsOffers_2_3a(object sender, EventArgs e)   
         {
 
             string query = "SELECT * FROM dbo.Account_SMS_Offers(@MobileNumber)";
@@ -134,22 +134,19 @@ namespace WebApplication1
 
         protected void get_Accepted_Payment_Trans(object sender, EventArgs e)
         {
-            // Define your query
             string query = "SELECT COUNT(1) FROM Payment WHERE mobileNo = @Input";
             string inputMobileNumber = Accepted_Payment_Transactions_Mobile_Number.Text;
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    // Add parameter to prevent SQL Injection
                     command.Parameters.AddWithValue("@Input", inputMobileNumber);
 
                     connection.Open();
 
-                    // Execute query
                     int count = Convert.ToInt32(command.ExecuteScalar());
 
-                    if (count > 0)// Input exists in the database
+                    if (count > 0)
                     {
                         string query2 = "exec  Account_Payment_Points @MobileNumber";
 
@@ -172,7 +169,6 @@ namespace WebApplication1
                     }
                     else
                     {
-                        // Input does not exist in the database
                         ShowAlert($"An error occured , Please enter a valid mobile number", "none");
                     }
                 }
@@ -198,19 +194,17 @@ namespace WebApplication1
             {
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    // Add parameter to prevent SQL Injection
                     command.Parameters.AddWithValue("@WalletID", walletId);
                     command.Parameters.AddWithValue("@planID", planID);
 
                     connection.Open();
 
-                    // Execute query
                     try
                     {
                         int count = Convert.ToInt32(command.ExecuteScalar());
 
 
-                        if (count > 0)// Input exists in the database
+                        if (count > 0)
                         {
 
                             string query2 = "select dbo.Wallet_Cashback_Amount(@WalletId,@planId)";
@@ -233,7 +227,6 @@ namespace WebApplication1
                         }
                         else
                         {
-                            // Input does not exist in the database
                             ShowAlert($"An error occured , Please enter a valid WalletID or PlanID", "none");
                         }
                         connection.Close();
@@ -268,7 +261,7 @@ namespace WebApplication1
                         SqlDataAdapter adapter = new SqlDataAdapter(command);
                         DataTable dataTable = new DataTable();
                         adapter.Fill(dataTable);
-                        int avgSentTrans = int.Parse(dataTable.Rows[0][0].ToString());//needs error handling
+                        int avgSentTrans = int.Parse(dataTable.Rows[0][0].ToString());
                         avg_Sent_Trans_h3.InnerText = "Average Sent Transaction : " + avgSentTrans;
                     }
                     catch (Exception ex)

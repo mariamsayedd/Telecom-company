@@ -26,17 +26,17 @@
            color: black;
            }
         #themeToggle {
-            position: fixed; /* Stays in place even when you scroll */
-            top: 10px; /* Distance from the top of the page */
-            right: 10px; /* Distance from the right edge of the page */
-            width: 50px; /* Adjust the size of the button */
-            height: 50px; /* Adjust the size of the button */
-            padding: 0; /* Remove extra padding */
-            z-index: 1000; /* Ensures it appears above other elements */
+            position: fixed; 
+            top: 10px; 
+            right: 10px; 
+            width: 50px; 
+            height: 50px; 
+            padding: 0; 
+            z-index: 1000; 
         }
 
         #themeToggle img {
-            width: 30px; /* Adjust the size of the image */
+            width: 30px; 
             height: 30px;
         }
          .centered-div {
@@ -46,7 +46,7 @@
             padding: 30px;
             width: 100%;
             max-width: 500px;
-            margin: 100px auto; /* Centers the div */
+            margin: 100px auto; 
         }
      
 

@@ -5,10 +5,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <title>Admin Page</title>
-    <!-- Add Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
        <style>
-        /* Default Light Theme */
         body {
             background: url('https://source.unsplash.com/1600x900/?abstract,technology') no-repeat center center fixed;
             background-size: cover;
@@ -409,13 +407,11 @@ that it should have.
 <h3 id="H1" runat="server"></h3>
 </div>
 
-        <!-- -->
 
         </form>
        <!-- bootstrap link  -->
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-       // Dark Theme Toggle Logic
        const themeToggle = document.getElementById('themeToggle');
        const body = document.body;
 

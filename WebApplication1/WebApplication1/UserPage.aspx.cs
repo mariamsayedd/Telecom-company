@@ -38,7 +38,6 @@ namespace WebApplication1
 
             }
 
-            //mobileNo = "01234567890";
             if (dropDown.SelectedValue != "2")
                 getconsume.Visible = false;
             if (dropDown.SelectedValue != "9")
@@ -335,10 +334,8 @@ namespace WebApplication1
             {
                 string storedProcedure = "Account_Highest_Voucher";
 
-                // Create SqlCommand object to execute the stored procedure
                 using (SqlCommand command = new SqlCommand(storedProcedure, connection))
                 {
-                    // Specify that this command is a stored procedure
                     command.CommandType = CommandType.StoredProcedure;
 
                     command.Parameters.AddWithValue("@mobile_num", mobileNo);
