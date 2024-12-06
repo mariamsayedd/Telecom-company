@@ -58,7 +58,7 @@
         max-width: 500px; /* Limit the maximum width */
         padding: 1rem;
         }
-
+       
         .alert-container.show {
         display: block; /* Make visible when needed */
     }
@@ -90,8 +90,12 @@
                 <asp:ListItem Value="1">View details for all customer profiles along with their active accounts.</asp:ListItem> <%--  2.2 a takes no input --%>
                 <asp:ListItem Value="2">View the list of all physical stores along with their redeemed voucher’s ids and values.</asp:ListItem> <%--  2.2 i takes no input --%>
                 <asp:ListItem Value="3">View details for all resolved tickets.</asp:ListItem> <%--  2.2 f takes no input --%>
-                <asp:ListItem Value="4">View all customers’ accounts along with their subscribed service plans.</asp:ListItem> <%--  2.3 a  takes no input --%>
-            
+                <asp:ListItem Value="4">View all customers’ accounts along with their subscribed service plans.</asp:ListItem>
+                <asp:ListItem Value="5"> View details of all wallets along with their customer names. </asp:ListItem> <%--  2.3 a  takes no input --%>
+                <asp:ListItem Value="6"> View the list of all E-shops along with their redeemed voucher’s ids and values. </asp:ListItem> <%--  2.3 a  takes no input --%>
+                <asp:ListItem Value="7"> View all payments’ transaction details along with their initiated Accounts. </asp:ListItem> <%--  2.3 a  takes no input --%>
+                <asp:ListItem Value="8"> View the total number of cashback transactions per each wallet ID.</asp:ListItem> <%--  2.3 a  takes no input --%>
+             
            </asp:DropDownList>
 
         </div>
@@ -249,6 +253,168 @@
     </div>
 
 
+                <!--  Show the number of accepted payment transactions initiated by the input account 
+during the last year along with the total amount of earned points. -->
+
+  <div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header text-center bg-primary text-white">
+                    <h5> Show the number of accepted payment transactions initiated by the input account 
+during the last year along with the total amount of earned points.</h5>
+                </div>
+                <div class="card-body d-grid">
+                        <div class="mb-3">
+                            <%-- <asp:Label runat="server" Text="Enter Mobile Number" CssClass="form-label"></asp:Label> --%>
+                            <asp:TextBox ID="Accepted_Payment_Transactions_Mobile_Number" runat="server" CssClass="form-control" placeholder="Enter mobile number "></asp:TextBox>
+                        </div>
+                        <div class="d-grid col-md-3 mx-auto ">
+                            <asp:Button ID="Button3" runat="server" OnClick="get_Accepted_Payment_Trans" Text="Query" CssClass="btn btn-primary btn-sm" />
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+            
+         <div class="container mt-5 justify-content-center" runat="server">
+ <h3 id="outputText" runat="server"></h3>
+ </div>
+
+                <!-- Show the amount of cashback returned on the input wallet id based on a certain 
+input plan id.  -->
+
+        
+          <div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header text-center bg-primary text-white">
+                    <h5>Show the amount of cashback returned on the input wallet id based on a certain 
+input plan id. </h5>
+                </div>
+                <div class="card-body d-grid">
+                        <div class="mb-3">
+                            <%-- <asp:Label runat="server" Text="Enter Mobile Number" CssClass="form-label"></asp:Label> --%>
+                            <asp:TextBox ID="TextBox_WalletID" runat="server" CssClass="form-control" placeholder="Enter WalletID " ></asp:TextBox>
+                        </div>
+                    <div class="mb-1">
+                        <%-- <asp:Label runat="server" Text="Enter Mobile Number" CssClass="form-label"></asp:Label> --%>
+                        <asp:TextBox ID="TextBox_PlanID" runat="server" CssClass="form-control" placeholder="Enter Plan ID"></asp:TextBox>
+                    </div>
+                        <div class="d-grid col-md-3 mx-auto">
+                            <asp:Button ID="Button4" runat="server" OnClick="show_cashback_amount" Text="Submit" CssClass="btn btn-primary btn-sm" />
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+      <div class="container mt-5 justify-content-center" runat="server">
+<h3 id="cashback_H1" runat="server"></h3>
+</div>
+
+
+                      <!-- Show the average of the sent transaction amounts from the input wallet id within 
+a certain input duration  -->
+
+          <div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header text-center bg-primary text-white">
+                    <h5>Show the average of the sent transaction amounts from the input wallet id within 
+a certain input duration </h5>
+                </div>
+                <div class="card-body d-grid">
+                        <div class="mb-3">
+                            <%-- <asp:Label runat="server" Text="Enter Mobile Number" CssClass="form-label"></asp:Label> --%>
+                            <asp:TextBox ID="start_date_avgSentTrans" runat="server" CssClass="form-control" placeholder="Enter startDate" TextMode="Date"></asp:TextBox>
+                        </div>
+                    <div class="mb-3">
+    <%-- <asp:Label runat="server" Text="Enter Mobile Number" CssClass="form-label"></asp:Label> --%>
+    <asp:TextBox ID="end_date_avgSentTrans" runat="server" CssClass="form-control" placeholder="Enter endDate" TextMode="Date"></asp:TextBox>
+</div>
+                    <div class="mb-1">
+                        <%-- <asp:Label runat="server" Text="Enter Mobile Number" CssClass="form-label"></asp:Label> --%>
+                        <asp:TextBox ID="TextBox_WalletID_avgSentTrans" runat="server" CssClass="form-control" placeholder="Enter Wallet ID "></asp:TextBox>
+                    </div>
+                        <div class="d-grid col-md-3 mx-auto">
+                            <asp:Button ID="Button5" runat="server" OnClick="getAvgSentTrans" Text="Submit" CssClass="btn btn-primary btn-sm" />
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+               <div class="container mt-5 justify-content-center" runat="server">
+<h3 id="avg_Sent_Trans_h3" runat="server"></h3>
+</div>
+
+
+                <!--  Show if the input mobile Number is linked to a wallet, or not.  -->
+
+          <div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header text-center bg-primary text-white">
+                    <h5> Show if the input mobile Number is linked to a wallet, or not.</h5>
+                </div>
+                <div class="card-body d-grid">
+                        <div class="mb-3">
+                            <%-- <asp:Label runat="server" Text="Enter Mobile Number" CssClass="form-label"></asp:Label> --%>
+                            <asp:TextBox ID="MobileNumber_isLinked" runat="server" CssClass="form-control" placeholder="Enter mobile number "></asp:TextBox>
+                        </div>
+                        <div class="d-grid col-md-3 mx-auto">
+                            <asp:Button ID="Button6" runat="server" OnClick="isMobileLinked" Text="Submit" CssClass="btn btn-primary btn-sm" />
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+ <div class="container mt-5 justify-content-center" runat="server">
+<h3 id="isLinked" runat="server"></h3>
+</div>
+
+        
+                <!--  Take mobile number as an input then Update the total number of earned points 
+that it should have. 
+  -->
+
+          <div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-header text-center bg-primary text-white">
+                    <h5> Take mobile number as an input then Update the total number of earned points 
+that it should have. 
+</h5>
+                </div>
+                <div class="card-body d-grid">
+                        <div class="mb-3">
+                            <%-- <asp:Label runat="server" Text="Enter Mobile Number" CssClass="form-label"></asp:Label> --%>
+                            <asp:TextBox ID="MobileNo_update" runat="server" CssClass="form-control" placeholder="Enter mobile number "></asp:TextBox>
+                        </div>
+                        <div class="d-grid col-md-3 mx-auto">
+                            <asp:Button ID="Button7" runat="server" OnClick="updatePoints" Text="Submit" CssClass="btn btn-primary btn-sm" />
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-5 justify-content-center" runat="server">
+<h3 id="H1" runat="server"></h3>
+</div>
 
         <!-- -->
 

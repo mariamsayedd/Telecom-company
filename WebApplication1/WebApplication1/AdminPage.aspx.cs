@@ -1,9 +1,12 @@
-﻿using System;
+﻿
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Web;
 using System.Web.Configuration;
 using System.Web.UI;
@@ -38,9 +41,21 @@ namespace WebApplication1
                 case 4:
                     query = "exec Account_Plan";
                     break;
+                case 5:
+                    query = "SELECT * from CustomerWallet";
+                    break;
+                case 6:
+                    query = "SELECT * from E_shopVouchers";
+                    break;
+                case 7:
+                    query = "SELECT * from AccountPayments";
+                    break;
+                case 8:
+                    query = "SELECT * from Num_of_cashback";
+                    break;
             }
 
-           // GridView1.Controls.Clear();
+            // GridView1.Controls.Clear();
 
             SqlDataAdapter adapter = new SqlDataAdapter(query, connectionString);
             DataTable dataTable = new DataTable();
@@ -50,6 +65,40 @@ namespace WebApplication1
             GridView1.DataSource = dataTable;
             GridView1.DataBind();
 
+        }
+
+        private bool ExistsInDatabaseInt(string columnName, int value, string tableName)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "SELECT COUNT(*) FROM " + tableName + " WHERE " + columnName + " = @value";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@value", value);
+                    connection.Open();
+                    int count = (int)command.ExecuteScalar();
+                    return count > 0;
+                }
+
+
+            }
+        }
+
+        private bool ExistsInDatabaseString(string columnName, string value, string tableName)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                string query = "SELECT COUNT(*) FROM " + tableName + " WHERE " + columnName + " = @value";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@value", value);
+                    connection.Open();
+                    int count = (int)command.ExecuteScalar();
+                    return count > 0;
+                }
+
+
+            }
         }
 
         protected void smsOffers_2_3a(object sender, EventArgs e)   // try test data '01234567898' (offerID 10    benefitID 15)
@@ -70,6 +119,222 @@ namespace WebApplication1
 
         }
 
+        protected void get_Accepted_Payment_Trans(object sender, EventArgs e)
+        {
+            // Define your query
+            string query = "SELECT COUNT(1) FROM Payment WHERE mobileNo = @Input";
+            string inputMobileNumber = Accepted_Payment_Transactions_Mobile_Number.Text;
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    // Add parameter to prevent SQL Injection
+                    command.Parameters.AddWithValue("@Input", inputMobileNumber);
+
+                    connection.Open();
+
+                    // Execute query
+                    int count = Convert.ToInt32(command.ExecuteScalar());
+
+                    if (count > 0)// Input exists in the database
+                    {
+                        string query2 = "exec  Account_Payment_Points @MobileNumber";
+
+                        SqlCommand command2 = new SqlCommand(query2, connection);
+                        command2.Parameters.AddWithValue("@MobileNumber", inputMobileNumber);
+
+                        try
+                        {
+                            SqlDataAdapter adapter = new SqlDataAdapter(command2);
+                            DataTable dataTable = new DataTable();
+                            adapter.Fill(dataTable);
+                            int acceptedPayment_count = int.Parse(dataTable.Rows[0][0].ToString());
+                            outputText.InnerText = "Accepted payment :" + acceptedPayment_count;
+                        }
+                        catch (Exception ex)
+                        {
+                            ShowAlert($"An error occured , Please enter a valid mobile number", "none");
+                        }
+
+                    }
+                    else
+                    {
+                        // Input does not exist in the database
+                        ShowAlert($"An error occured , Please enter a valid mobile number", "none");
+                    }
+                }
+            }
+
+
+
+
+
+
+
+
+        }
+
+        protected void show_cashback_amount(object sender, EventArgs e)
+        {
+
+            string walletId = TextBox_WalletID.Text;
+            string planID = TextBox_PlanID.Text;
+            string query = "SELECT COUNT(*) FROM Cashback as c , plan_provides_benefits as pb WHERE c.walletID = @WalletId and pb.planID = @planID";
+            string inputMobileNumber = Accepted_Payment_Transactions_Mobile_Number.Text;
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    // Add parameter to prevent SQL Injection
+                    command.Parameters.AddWithValue("@WalletID", walletId);
+                    command.Parameters.AddWithValue("@planID", planID);
+
+                    connection.Open();
+
+                    // Execute query
+                    try
+                    {
+                        int count = Convert.ToInt32(command.ExecuteScalar());
+
+
+                        if (count > 0)// Input exists in the database
+                        {
+
+                            string query2 = "select dbo.Wallet_Cashback_Amount(@WalletId,@planId)";
+                            SqlCommand command2 = new SqlCommand(query, connection);
+                            command.Parameters.AddWithValue("@WalletId ", walletId);
+                            command.Parameters.AddWithValue("@planId", planID);
+                            try
+                            {
+                                SqlDataAdapter adapter = new SqlDataAdapter(command);
+                                DataTable dataTable = new DataTable();
+                                adapter.Fill(dataTable);
+                                int cashback_amount = int.Parse(dataTable.Rows[0][0].ToString());
+                                cashback_H1.InnerText = "cashback amount : " + cashback_amount;
+                            }
+                            catch (Exception ex)
+                            {
+                                ShowAlert($"An error occured , Please enter a valid WalletID or PlanID", "none");
+                            }
+
+                        }
+                        else
+                        {
+                            // Input does not exist in the database
+                            ShowAlert($"An error occured , Please enter a valid WalletID or PlanID", "none");
+                        }
+                        connection.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        ShowAlert($"An error occured , Please enter a valid WalletID or PlanID", "none");
+                    }
+                }
+            }
+        }
+
+        protected void getAvgSentTrans(object sender, EventArgs e)
+        {
+            string query = "select dbo.Wallet_Transfer_Amount(@WalletId,@start_date,@end_date)";
+            string startDate = start_date_avgSentTrans.Text;
+            string endDate = end_date_avgSentTrans.Text;
+            string walletId = TextBox_WalletID_avgSentTrans.Text;
+            SqlCommand command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@WalletId ", walletId);
+            command.Parameters.AddWithValue("@start_date", startDate);
+            command.Parameters.AddWithValue("@end_date", endDate);
+
+            try
+            {
+                if (ExistsInDatabaseString("transfer_money", startDate, "transfer_date")
+                && ExistsInDatabaseString("transfer_money", endDate, "transfer_date")
+                && ExistsInDatabaseInt("transfer_money", Int32.Parse(walletId), "walletID1"))
+                {
+                    try
+                    {
+                        SqlDataAdapter adapter = new SqlDataAdapter(command);
+                        DataTable dataTable = new DataTable();
+                        adapter.Fill(dataTable);
+                        int avgSentTrans = int.Parse(dataTable.Rows[0][0].ToString());//needs error handling
+                        avg_Sent_Trans_h3.InnerText = "Average Sent Transaction : " + avgSentTrans;
+                    }
+                    catch (Exception ex)
+                    {
+                        ShowAlert($"An error occured , start date or end date or WalletID might be not valid", "none");
+                    }
+
+                }
+                else
+                {
+                    ShowAlert($"An error occured , start date or end date or WalletID might be not valid", "none");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ShowAlert($"An error occured , start date or end date or WalletID might be not valid", "none");
+            }
+        }
+
+        protected void isMobileLinked(object sender, EventArgs e)
+        {
+            string query = "select dbo.Wallet_MobileNo(@MobileNo)";
+            string mobilenumber_input = MobileNumber_isLinked.Text;
+            SqlCommand command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@MobileNo", mobilenumber_input);
+            try
+            {
+                if (!ExistsInDatabaseString("mobileNo", mobilenumber_input, "Wallet"))
+                {
+                    ShowAlert($"An error occured , Please enter a valid mobile number", "none");
+                }
+                else
+                {
+
+                    SqlDataAdapter adapter = new SqlDataAdapter(command);
+                    DataTable dataTable = new DataTable();
+                    adapter.Fill(dataTable);
+                    bool bit = bool.Parse(dataTable.Rows[0][0].ToString());
+                    if (bit != null && bit == true)
+                    {
+                        isLinked.InnerText = "it is Linked to wallet";
+                    }
+                    else
+                    {
+                        isLinked.InnerText = "not linked";
+                    }
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                ShowAlert($"An error occured , Please enter a valid mobile number", "none");
+            }
+
+
+        }
+
+        protected void updatePoints(object sender, EventArgs e)
+        {
+
+            string query = "exec Total_Points_Account @MobileNo";
+            string mobileNo = MobileNo_update.Text;
+            SqlCommand command = new SqlCommand(query, connection);
+            command.Parameters.AddWithValue("@MobileNo", mobileNo);
+
+            try
+            {
+                if (ExistsInDatabaseString("mobileNo", mobileNo, "Payment"))
+                    H1.InnerText = "points for " + mobileNo + " updated successfuly";
+                else
+                    ShowAlert($"An error occured , Please enter a valid mobile number , points did not update", "none");
+            }
+            catch (Exception ex)
+            {
+                ShowAlert($"An error occured , Please enter a valid mobile number , points did not update", "none");
+            }
+        }
 
         protected void deletingBenefits_2_3d(object sender, EventArgs e)    // try test data '01234567890' and 37 (re-insert if needed)
         {
@@ -98,7 +363,8 @@ namespace WebApplication1
             {
                 ShowAlert($"An error occured {ex.Message}", "none");
             }
-            finally {
+            finally
+            {
                 connection.Close();
             }
 
@@ -116,7 +382,8 @@ namespace WebApplication1
 
                 AlertPlaceholder.Text = alertHtml;
             }
-            else {
+            else
+            {
                 string alertHtml = $@"
                  <div class='alert alert-{alertType} alert-dismissible fade show' role='alert'>
                      <strong>{(alertType == "success" ? "Success!" : "Warning!")}</strong> {message}
@@ -129,7 +396,8 @@ namespace WebApplication1
 
 
 
-        protected void Account_Plan_date_2_3_b(object sender, EventArgs e) { //select * from dbo.Account_Plan_date ('2023-01-10', 41)
+        protected void Account_Plan_date_2_3_b(object sender, EventArgs e)
+        { //select * from dbo.Account_Plan_date ('2023-01-10', 41)
             string query = "select * from dbo.Account_Plan_date (@sub_date, @planId)";
             String inputSubscriptionDate = Account_Plan_date_subdate.Text;
             String inputPlanID = Account_Plan_date_plan_id.Text;
@@ -156,10 +424,11 @@ namespace WebApplication1
 
         //select* from dbo.Account_Usage_Plan('01234567890','2023-01-01' )
 
-        protected void Account_Usage_Plan_2_3_c(object sender, EventArgs e){         //select* from dbo.Account_Usage_Plan('01234567890','2023-01-01' )
+        protected void Account_Usage_Plan_2_3_c(object sender, EventArgs e)
+        {         //select* from dbo.Account_Usage_Plan('01234567890','2023-01-01' )
             string query = "select * from dbo.Account_Usage_Plan(@mobileNum,@start_date )";
             String inputStartDate = Account_Usage_Plan_date.Text;
-            String inputMobileNum= Account_Usage_Plan_mobileNum.Text;
+            String inputMobileNum = Account_Usage_Plan_mobileNum.Text;
             SqlCommand command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@start_date", inputStartDate);
             command.Parameters.AddWithValue("@mobileNum", inputMobileNum);
