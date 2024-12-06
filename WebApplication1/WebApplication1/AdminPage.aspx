@@ -65,11 +65,16 @@
     </style>
 </head>
 
+
+
 <body class="bg-light">
+
+    
     <button type="button" id="themeToggle" class="btn btn-outline-secondary">
         <img src="dark-theme.svg" alt="My Happy SVG" />
     </button>    
     <form runat="server">
+                <asp:Button ID="SignOut" runat="server" OnClick="signOut" type="button" text="Sign out" class="btn btn-primary" />
 
         <div class="container">
     <div class="centered-div text-center">

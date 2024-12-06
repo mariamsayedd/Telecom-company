@@ -482,6 +482,11 @@ namespace WebApplication1
             }
 
         }
+
+        protected void signOut(object sender, EventArgs e)
+        {
+            Response.Redirect("Login.aspx");
+        }
     }
 
 }

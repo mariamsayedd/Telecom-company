@@ -66,7 +66,7 @@
         <div class="mb-3" >
            <asp:DropDownList ID="dropDown"  runat="server" CssClass="form-select">
                 <asp:ListItem Value="0" Selected="True">Choose from the following:</asp:ListItem>
-                <asp:ListItem Value="1">View details of all offered Service Plans.</asp:ListItem>
+                <asp:ListItem Value="1">View details of all offered Service Plans.</asp:ListItem>       
                 <asp:ListItem Value="2">View the total SMS, Minutes and Internet consumption.</asp:ListItem>
                 <asp:ListItem Value="3">Display all offered plans currently not subscribed to.</asp:ListItem>   
                 <asp:ListItem Value="4">Show the usage of active plans during this month.</asp:ListItem>
