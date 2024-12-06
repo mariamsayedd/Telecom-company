@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -57,7 +57,7 @@ namespace WebApplication1
                     
                     if (isAdmin)
                     {
-                        Response.Redirect($"AdminPage.aspx");
+                        Response.Redirect("AdminPage.aspx");
                     }
                     // Redirect or perform additional actions
                     else {
@@ -66,12 +66,36 @@ namespace WebApplication1
                 }
                 else
                 {
-                    Response.Write("Invalid mobile number or password.");
+                    ShowAlert("Invalid mobile number or password.", "warning");
                 }
             }
             catch (Exception ex)
             {
-                Response.Write("An error occurred: " + ex.Message);
+                ShowAlert($"An error occurred: {ex.Data}", "warning" );
+            }
+        }
+
+        private void ShowAlert(string message, string alertType)
+        {
+            if (message == "Welcome back Admin")
+            {
+                string alertHtml = $@"
+                 <div class='alert alert-{alertType} alert-dismissible fade show' role='alert'>
+                     <strong>Login Successful!</strong> {message}
+                     <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                 </div>";
+
+                AlertPlaceholder.Text = alertHtml;
+            }
+            else
+            {
+                string alertHtml = $@"
+                 <div class='alert alert-{alertType} alert-dismissible fade show' role='alert'>
+                     <strong>{(alertType == "success" ? "Success!" : "Warning!")}</strong> {message}
+                     <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                 </div>";
+
+                AlertPlaceholder.Text = alertHtml;
             }
         }
 
