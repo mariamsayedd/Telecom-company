@@ -254,7 +254,7 @@ namespace WebApplication1
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
+                ShowAlert($"Error: {ex.Message}", "warning");
             }
         }
 
@@ -290,18 +290,18 @@ namespace WebApplication1
                         if (result != null && result != DBNull.Value)
                         {
                             int extraAmount = Convert.ToInt32(result);
-                            outputText.InnerText = $"Extra plan amount: {extraAmount}";
+                            ShowAlert($"Extra plan amount: {extraAmount}", "success");
                         }
                         else
                         {
-                            outputText.InnerText = "No result for the given plan name.";
+                            ShowAlert("No result for the given plan name.", "warning");
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error: {ex.Message}");
+                ShowAlert($"Error: {ex.Message}", "warning");
             }
         }
 
@@ -341,7 +341,7 @@ namespace WebApplication1
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("Error: " + ex.Message);
+                        ShowAlert("Error: " + ex.Message, "warning");
                     }
                 }
             }
@@ -376,13 +376,13 @@ namespace WebApplication1
                             }
                             else
                             {
-                                outputText.InnerText = "No subscribed plans in the past 5 months";
+                                ShowAlert("No subscribed plans in the past 5 months", "warning");
                             }
 
                         }
                         catch (Exception ex)
                         {
-                            Console.WriteLine("Error: " + ex.Message);
+                            ShowAlert("Error: " + ex.Message, "warning");
                         }
                     }
                 }
@@ -404,7 +404,7 @@ namespace WebApplication1
 
 
             if (string.IsNullOrEmpty(inputAmountText) || string.IsNullOrEmpty(InputPaymentMethod) || string.IsNullOrEmpty(InputPlanIDText))
-                outputText.InnerText = "Please fill in all required fields";
+                ShowAlert("Please fill in all required fields", "warning");
             else
             {
                 decimal inputAmount;
@@ -415,7 +415,7 @@ namespace WebApplication1
                 }
                 catch (FormatException)
                 {
-                    outputText.InnerText = "Please enter a valid amount with at most 1 decimal place";
+                    ShowAlert("Please enter a valid amount with at most 1 decimal place", "warning");
                     return;
                 }
 
@@ -426,15 +426,16 @@ namespace WebApplication1
                 }
                 catch (FormatException)
                 {
-                    outputText.InnerText = "Please enter a valid plan ID.";
+                    ShowAlert("Please enter a valid plan ID.", "warning");
                     return;
                 }
 
                 if (InputPaymentMethod != "cash" && InputPaymentMethod != "credit")
-                    outputText.InnerText = "The payment method can only be cash or credit.";
+                    ShowAlert("The payment method can only be cash or credit.", "warning");
                 else if ((!ExistsInDatabaseInt("planID", InputPlanID, "Service_plan")))
-                    outputText.InnerText = "The specified plan ID does not exist.Please enter a valid ID";
-                else {
+                    ShowAlert("The specified plan ID does not exist.Please enter a valid ID", "warning");
+                else
+                {
                     using (SqlConnection connection = new SqlConnection(connectionString))
                     {
                         try
@@ -454,13 +455,13 @@ namespace WebApplication1
                                 DataTable dataTable = new DataTable();
                                 connection.Open();
                                 adapter.Fill(dataTable);
-                                outputText.InnerText = "Subscription has been successfully renewed!";
+                                ShowAlert("Subscription has been successfully renewed!", "success");
 
                             }
                         }
                         catch (Exception ex)
                         {
-                            outputText.InnerText = "Error: " + ex.Message;
+                            ShowAlert("Error: " + ex.Message, "warning");
                         }
                     }
 
@@ -483,7 +484,7 @@ namespace WebApplication1
             string InputBenefitIDText =Payment_wallet_cashback_Benefit_ID.Text;
 
             if (string.IsNullOrEmpty(InputPaymentIDText) || string.IsNullOrEmpty(InputBenefitIDText))
-                outputText.InnerText = "Please fill in all required fields";
+                ShowAlert("Please fill in all required fields", "warning");
             else
             { 
             
@@ -495,7 +496,7 @@ namespace WebApplication1
                 }
                 catch (FormatException)
                 {
-                    outputText.InnerText = "Please enter a valid payment ID";
+                    ShowAlert("Please enter a valid payment ID", "warning");                   
                     return;
                 }
                 try
@@ -504,7 +505,7 @@ namespace WebApplication1
                 }
                 catch (FormatException)
                 {
-                    outputText.InnerText = "Please enter a valid benefit ID.";
+                    ShowAlert("Please enter a valid benefit ID.", "warning");
                     return;
                 }
 
@@ -538,11 +539,11 @@ namespace WebApplication1
                                 adapter.Fill(dataTable);
                                 GridView1.DataSource = dataTable;
                                 GridView1.DataBind();
-                                outputText.InnerText = "Cashback calculated and wallet's balance updated successfully!";
+                                ShowAlert("Cashback calculated and wallet's balance updated successfully!", "success");
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine("Error: " + ex.Message);
+                                ShowAlert("Error" + ex.Message, "warning");
                             }
                         }
                     }
@@ -614,7 +615,7 @@ namespace WebApplication1
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine("Error: " + ex.Message);
+                                ShowAlert("Error" + ex.Message, "warning");
                             }
                         }
 
@@ -681,7 +682,7 @@ namespace WebApplication1
                             }
                             catch (Exception ex)
                             {
-                                Console.WriteLine("Error: " + ex.Message);
+                                ShowAlert("Error" + ex.Message, "warning");
                             }
                         }
                     }
@@ -720,6 +721,18 @@ namespace WebApplication1
 
 
             }
+        }
+
+        private void ShowAlert(string message, string alertType)
+        {
+                string alertHtml = $@"
+         <div class='alert alert-{alertType} alert-dismissible fade show' role='alert'>
+             <strong>{(alertType == "success" ? "Success!" : "Warning!")}</strong> {message}
+             <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+         </div>";
+
+                AlertPlaceholder.Text = alertHtml;
+            
         }
     }
 }
