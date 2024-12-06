@@ -70,16 +70,7 @@
         <img src="dark-theme.svg" alt="My Happy SVG" />
     </button>    
     <form runat="server">
-      <%-- <div class="btn-group" role="group">
 
-  <button type="button" class="btn btn-primary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-    Dropdown
-  </button>
-  <ul class="dropdown-menu">
-    <li><a class="dropdown-item" href="#">Dropdown link</a></li>
-    <li><a class="dropdown-item" href="#">Dropdown link</a></li>
-  </ul>
-</div>--%>
         <div class="container">
     <div class="centered-div text-center">
         <h2 class="mb-3">Admin Viewing Options</h2>

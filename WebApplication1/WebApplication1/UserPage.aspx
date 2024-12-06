@@ -62,6 +62,7 @@
         .alert-container.show {
         display: block; /* Make visible when needed */
     }
+
         #outputText{
             left: 50%;
 
@@ -294,5 +295,7 @@
         <h3 id="outputText" runat="server"></h3>
         </div>
     </form>
+       <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>

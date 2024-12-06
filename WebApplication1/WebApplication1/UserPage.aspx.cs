@@ -450,7 +450,8 @@ namespace WebApplication1
                             }
                             else
                             {
-                                ShowAlert("No result for the given plan name.", "warning")                  }
+                                ShowAlert("No result for the given plan name.", "warning");
+                            }
                         }
                     }
                 }

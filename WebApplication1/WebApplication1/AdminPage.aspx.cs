@@ -19,8 +19,7 @@ namespace WebApplication1
         static string connectionString = WebConfigurationManager.ConnectionStrings["master"].ToString();
         static SqlConnection connection = new SqlConnection(connectionString);
         protected void Page_Load(object sender, EventArgs e)
-        {
-            ShowAlert("Welcome back Admin", "success");
+        { 
         }
 
         protected void list(object sender, EventArgs e)
