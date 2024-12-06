@@ -398,13 +398,7 @@ namespace WebApplication1
                 string alertHtml = $@"
                  <div class='alert alert-{alertType} alert-dismissible fade show' role='alert'>
                      <strong>Login Successful!</strong> {message}
-                    <asp:Button 
-    ID=""btnClose"" 
-    runat=""server"" 
-    CssClass=""btn-close"" 
-    OnClick=""hideAlert"" 
-    aria-label=""Close"" />
-
+                     <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
                  </div>";
 
                 AlertPlaceholder.Text = alertHtml;
@@ -487,15 +481,6 @@ namespace WebApplication1
                 ShowAlert($"An error occured {ex.Message}", "none");
             }
 
-        }
-
-        private void hideAlert(string message, string alertType)
-        {
-           
-            string alertHtml = "";
-
-            AlertPlaceholder.Text = alertHtml;
-            
         }
     }
 
