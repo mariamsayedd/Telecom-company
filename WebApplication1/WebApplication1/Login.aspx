@@ -4,10 +4,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <title>Login</title>
-    <!-- Add Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
        <style>
-        /* Default Light Theme */
         body {
             background: url('https://source.unsplash.com/1600x900/?abstract,technology') no-repeat center center fixed;
             background-size: cover;
@@ -30,17 +28,17 @@
             border-color: #9b69d9;
         }
         #themeToggle {
-            position: fixed; /* Stays in place even when you scroll */
-            top: 10px; /* Distance from the top of the page */
-            right: 10px; /* Distance from the right edge of the page */
-            width: 50px; /* Adjust the size of the button */
-            height: 50px; /* Adjust the size of the button */
-            padding: 0; /* Remove extra padding */
-            z-index: 1000; /* Ensures it appears above other elements */
+            position: fixed;
+            top: 10px; 
+            right: 10px;
+            width: 50px; 
+            height: 50px;
+            padding: 0; 
+            z-index: 1000;
         }
 
         #themeToggle img {
-            width: 30px; /* Adjust the size of the image */
+            width: 30px; 
             height: 30px;
         }
            .alert-container {
@@ -48,14 +46,14 @@
                 top: 25%;
                 left: 50%;
                 transform: translate(-50%, -50%);
-                z-index: 1050; /* Ensures it's above most elements */
-                width: 50%; /* Adjust width as needed */
-                max-width: 500px; /* Limit the maximum width */
+                z-index: 1050;
+                width: 50%;
+                max-width: 500px;
                 padding: 1rem;
                 }
 
                 .alert-container.show {
-                display: block; /* Make visible when needed */
+                display: block; 
             }
 
     </style>
@@ -76,7 +74,6 @@
                             <h3 class="text-center mb-4">Please Login</h3>
                             <!-- Mobile Number -->
 
-<!-- default admin credentials are: 1223334444 : admin    -->
 
 
 
@@ -111,10 +108,8 @@
 
            
     </form>
-    <!-- bootstrap link  -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
      <script>
-        // Dark Theme Toggle Logic
         const themeToggle = document.getElementById('themeToggle');
         const body = document.body;
 

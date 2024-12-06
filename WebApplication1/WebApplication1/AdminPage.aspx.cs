@@ -54,17 +54,23 @@ namespace WebApplication1
                     break;
             }
 
-            // GridView1.Controls.Clear();
 
             SqlDataAdapter adapter = new SqlDataAdapter(query, connectionString);
             DataTable dataTable = new DataTable();
             adapter.Fill(dataTable);
-
-            // Bind the data to the GridView
-            GridView1.DataSource = dataTable;
-            GridView1.DataBind();
+            if (dataTable.Rows.Count > 0)
+            {
+                GridView1.DataSource = dataTable;
+                GridView1.DataBind();
+            }
+            else
+            {
+                ShowAlert("No records Found", "warning");
+            }
 
         }
+
+
 
         private bool ExistsInDatabaseInt(string columnName, int value, string tableName)
         {
@@ -104,7 +110,6 @@ namespace WebApplication1
         {
 
             string query = "SELECT * FROM dbo.Account_SMS_Offers(@MobileNumber)";
-            //string query2 = "SELECT * from Customer_Account";
             String inputMobileNumber = smsMobileNumber.Text;
             SqlCommand command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@MobileNumber", inputMobileNumber);
@@ -113,29 +118,33 @@ namespace WebApplication1
             DataTable dataTable = new DataTable();
             adapter.Fill(dataTable);
             GridView gv = new GridView();
-            GridView2.DataSource = dataTable;
-            GridView2.DataBind();
-
+   
+            if (dataTable.Rows.Count > 0)
+            {
+                GridView2.DataSource = dataTable;
+                GridView2.DataBind();
+            }
+            else
+            {
+                ShowAlert("No records found", "warning");
+            }
         }
 
         protected void get_Accepted_Payment_Trans(object sender, EventArgs e)
         {
-            // Define your query
             string query = "SELECT COUNT(1) FROM Payment WHERE mobileNo = @Input";
             string inputMobileNumber = Accepted_Payment_Transactions_Mobile_Number.Text;
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    // Add parameter to prevent SQL Injection
                     command.Parameters.AddWithValue("@Input", inputMobileNumber);
 
                     connection.Open();
 
-                    // Execute query
                     int count = Convert.ToInt32(command.ExecuteScalar());
 
-                    if (count > 0)// Input exists in the database
+                    if (count > 0)
                     {
                         string query2 = "exec  Account_Payment_Points @MobileNumber";
 
@@ -148,7 +157,7 @@ namespace WebApplication1
                             DataTable dataTable = new DataTable();
                             adapter.Fill(dataTable);
                             int acceptedPayment_count = int.Parse(dataTable.Rows[0][0].ToString());
-                            outputText.InnerText = "Accepted payment :" + acceptedPayment_count;
+                            ShowAlert("Accepted payment :" + acceptedPayment_count,"warning");
                         }
                         catch (Exception ex)
                         {
@@ -158,7 +167,6 @@ namespace WebApplication1
                     }
                     else
                     {
-                        // Input does not exist in the database
                         ShowAlert($"An error occured , Please enter a valid mobile number", "none");
                     }
                 }
@@ -196,7 +204,7 @@ namespace WebApplication1
                         int count = Convert.ToInt32(command.ExecuteScalar());
 
 
-                        if (count > 0)// Input exists in the database
+                        if (count > 0)
                         {
 
                             string query2 = "select dbo.Wallet_Cashback_Amount(@WalletId,@planId)";
@@ -209,8 +217,7 @@ namespace WebApplication1
                                 DataTable dataTable = new DataTable();
                                 adapter.Fill(dataTable);
                                 int cashback_amount = int.Parse(dataTable.Rows[0][0].ToString());
-                                cashback_H1.InnerText = "cashback amount : " + cashback_amount;
-                            }
+                                ShowAlert("cashback amount : " + cashback_amount, "success");                  }
                             catch (Exception ex)
                             {
                                 ShowAlert($"An error occured , Please enter a valid WalletID or PlanID", "none");
@@ -219,7 +226,6 @@ namespace WebApplication1
                         }
                         else
                         {
-                            // Input does not exist in the database
                             ShowAlert($"An error occured , Please enter a valid WalletID or PlanID", "none");
                         }
                         connection.Close();
@@ -254,8 +260,8 @@ namespace WebApplication1
                         SqlDataAdapter adapter = new SqlDataAdapter(command);
                         DataTable dataTable = new DataTable();
                         adapter.Fill(dataTable);
-                        int avgSentTrans = int.Parse(dataTable.Rows[0][0].ToString());//needs error handling
-                        avg_Sent_Trans_h3.InnerText = "Average Sent Transaction : " + avgSentTrans;
+                        int avgSentTrans = int.Parse(dataTable.Rows[0][0].ToString());
+                        ShowAlert("Average Sent Transaction : " + avgSentTrans, "success");
                     }
                     catch (Exception ex)
                     {
@@ -325,7 +331,7 @@ namespace WebApplication1
             try
             {
                 if (ExistsInDatabaseString("mobileNo", mobileNo, "Payment"))
-                    H1.InnerText = "points for " + mobileNo + " updated successfuly";
+                    ShowAlert("points for " + mobileNo + " updated successfuly", "success") ;
                 else
                     ShowAlert($"An error occured , Please enter a valid mobile number , points did not update", "none");
             }
@@ -335,16 +341,17 @@ namespace WebApplication1
             }
         }
 
-        protected void deletingBenefits_2_3d(object sender, EventArgs e)    // try test data '01234567890' and 37 (re-insert if needed)
+        protected void deletingBenefits_2_3d(object sender, EventArgs e)   
         {
             string query = "exec Benefits_Account @MobileNumber, @PlanID";
-            //string query2 = "SELECT * from Customer_Account";
             String inputMobileNumber = deleteMobileNum.Text;
             String inputPlanID = deletePlanID.Text;
             SqlCommand command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@MobileNumber", inputMobileNumber);
             command.Parameters.AddWithValue("@PlanID", inputPlanID);
             command.CommandType = CommandType.Text;
+
+          
             try
             {
                 connection.Open();
@@ -356,6 +363,21 @@ namespace WebApplication1
                 else
                 {
                     ShowAlert("No matching benefits found", "warning");
+                }
+                SqlCommand command2 = new SqlCommand("Select * from Benefits", connection);
+
+                SqlDataAdapter adapter = new SqlDataAdapter(command2);
+                DataTable dataTable = new DataTable();
+                adapter.Fill(dataTable);
+                GridView gv = new GridView();
+                if (dataTable.Rows.Count > 0)
+                {
+                    deletion_gridview.DataSource = dataTable;
+                    deletion_gridview.DataBind();
+                }
+                else
+                {
+                    ShowAlert("No records found", "warning");
                 }
             }
             catch (Exception ex)
@@ -376,7 +398,13 @@ namespace WebApplication1
                 string alertHtml = $@"
                  <div class='alert alert-{alertType} alert-dismissible fade show' role='alert'>
                      <strong>Login Successful!</strong> {message}
-                     <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
+                    <asp:Button 
+    ID=""btnClose"" 
+    runat=""server"" 
+    CssClass=""btn-close"" 
+    OnClick=""hideAlert"" 
+    aria-label=""Close"" />
+
                  </div>";
 
                 AlertPlaceholder.Text = alertHtml;
@@ -396,8 +424,7 @@ namespace WebApplication1
 
 
         protected void Account_Plan_date_2_3_b(object sender, EventArgs e)
-        { //select * from dbo.Account_Plan_date ('2023-01-10', 41)
-            string query = "select * from dbo.Account_Plan_date (@sub_date, @planId)";
+        {   string query = "select * from dbo.Account_Plan_date (@sub_date, @planId)";
             String inputSubscriptionDate = Account_Plan_date_subdate.Text;
             String inputPlanID = Account_Plan_date_plan_id.Text;
             SqlCommand command = new SqlCommand(query, connection);
@@ -410,8 +437,15 @@ namespace WebApplication1
                 DataTable dataTable = new DataTable();
                 adapter.Fill(dataTable);
                 GridView gv = new GridView();
-                Account_Plan_date_Grid_View.DataSource = dataTable;
-                Account_Plan_date_Grid_View.DataBind();
+                if (dataTable.Rows.Count > 0)
+                {
+                    Account_Plan_date_Grid_View.DataSource = dataTable;
+                    Account_Plan_date_Grid_View.DataBind();
+                }
+                else
+                {
+                    ShowAlert("No records found", "warning");
+                }
 
             }
             catch (Exception ex)
@@ -421,10 +455,9 @@ namespace WebApplication1
 
         }
 
-        //select* from dbo.Account_Usage_Plan('01234567890','2023-01-01' )
 
         protected void Account_Usage_Plan_2_3_c(object sender, EventArgs e)
-        {         //select* from dbo.Account_Usage_Plan('01234567890','2023-01-01' )
+        {    
             string query = "select * from dbo.Account_Usage_Plan(@mobileNum,@start_date )";
             String inputStartDate = Account_Usage_Plan_date.Text;
             String inputMobileNum = Account_Usage_Plan_mobileNum.Text;
@@ -438,8 +471,15 @@ namespace WebApplication1
                 DataTable dataTable = new DataTable();
                 adapter.Fill(dataTable);
                 GridView gv = new GridView();
-                Account_Usage_Plan_GridView.DataSource = dataTable;
-                Account_Usage_Plan_GridView.DataBind();
+                if (dataTable.Rows.Count > 0)
+                {
+                    Account_Usage_Plan_GridView.DataSource = dataTable;
+                    Account_Usage_Plan_GridView.DataBind();
+                }
+                else
+                {
+                    ShowAlert("No records found", "warning");
+                }
 
             }
             catch (Exception ex)
@@ -447,6 +487,15 @@ namespace WebApplication1
                 ShowAlert($"An error occured {ex.Message}", "none");
             }
 
+        }
+
+        private void hideAlert(string message, string alertType)
+        {
+           
+            string alertHtml = "";
+
+            AlertPlaceholder.Text = alertHtml;
+            
         }
     }
 

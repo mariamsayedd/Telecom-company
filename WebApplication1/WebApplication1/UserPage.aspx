@@ -48,20 +48,7 @@
             max-width: 500px;
             margin: 100px auto; /* Centers the div */
         }
-       .alert-container {
-        position: fixed;
-        top: 25%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        z-index: 1050; /* Ensures it's above most elements */
-        width: 50%; /* Adjust width as needed */
-        max-width: 500px; /* Limit the maximum width */
-        padding: 1rem;
-        }
-
-        .alert-container.show {
-        display: block; /* Make visible when needed */
-    }
+     
 
         #outputText{
             left: 50%;
@@ -281,10 +268,7 @@
     </div>
 </div>
 
-        <!-- Alert Placeholder -->
-        <div class="alert-container mt-3">
-        <asp:Literal ID="AlertPlaceholder" runat="server"></asp:Literal>
-       </div>
+    
 
 
          <div class="container mt-5">
@@ -296,6 +280,6 @@
         </div>
     </form>
        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+       
 </body>
 </html>

@@ -26,17 +26,17 @@
            color: black;
            }
         #themeToggle {
-            position: fixed; /* Stays in place even when you scroll */
-            top: 10px; /* Distance from the top of the page */
-            right: 10px; /* Distance from the right edge of the page */
-            width: 50px; /* Adjust the size of the button */
-            height: 50px; /* Adjust the size of the button */
-            padding: 0; /* Remove extra padding */
-            z-index: 1000; /* Ensures it appears above other elements */
+            position: fixed; 
+            top: 10px; 
+            right: 10px; 
+            width: 50px; 
+            height: 50px; 
+            padding: 0;
+            z-index: 1000;
         }
 
         #themeToggle img {
-            width: 30px; /* Adjust the size of the image */
+            width: 30px;
             height: 30px;
         }
          .centered-div {
@@ -46,21 +46,21 @@
             padding: 30px;
             width: 100%;
             max-width: 500px;
-            margin: 100px auto; /* Centers the div */
+            margin: 100px auto; 
         }
        .alert-container {
         position: fixed;
         top: 25%;
         left: 50%;
         transform: translate(-50%, -50%);
-        z-index: 1050; /* Ensures it's above most elements */
-        width: 50%; /* Adjust width as needed */
-        max-width: 500px; /* Limit the maximum width */
+        z-index: 1050;
+        width: 50%; 
+        max-width: 500px; 
         padding: 1rem;
         }
        
         .alert-container.show {
-        display: block; /* Make visible when needed */
+        display: block; 
     }
     </style>
 </head>
@@ -74,7 +74,6 @@
         <div class="container">
     <div class="centered-div text-center">
         <h2 class="mb-3">Admin Viewing Options</h2>
-        <!-- <p class="text-muted mb-4"></p> -->
         <div class="mb-3" >
            <asp:DropDownList ID="dropDown"  runat="server" CssClass="form-select">
                 <asp:ListItem Value="0" Selected="True">Choose from the following:</asp:ListItem>
@@ -164,7 +163,12 @@
         </div>
     </div>
 </div>
-
+        
+        
+        <div class="container mt-5">
+            <asp:GridView ID="deletion_gridview" runat="server" CssClass="table table-striped table-bordered table-hover" AutoGenerateColumns="true">
+            </asp:GridView>
+        </div>
 
 
             <div class="alert-container mt-3">
@@ -225,7 +229,6 @@
                             <asp:TextBox ID="Account_Usage_Plan_mobileNum" runat="server" CssClass="form-control" placeholder="Enter mobile number " ></asp:TextBox>
                         </div>
                     <div class="mb-1">
-                        <%-- <asp:Label runat="server" Text="Enter Mobile Number" CssClass="form-label"></asp:Label> --%>
                         <asp:TextBox ID="Account_Usage_Plan_date" runat="server" CssClass="form-control" placeholder="Enter Plan ID" TextMode="Date"></asp:TextBox>
                     </div>
                         <div class="d-grid col-md-3 mx-auto">
@@ -257,7 +260,6 @@ during the last year along with the total amount of earned points.</h5>
                 </div>
                 <div class="card-body d-grid">
                         <div class="mb-3">
-                            <%-- <asp:Label runat="server" Text="Enter Mobile Number" CssClass="form-label"></asp:Label> --%>
                             <asp:TextBox ID="Accepted_Payment_Transactions_Mobile_Number" runat="server" CssClass="form-control" placeholder="Enter mobile number "></asp:TextBox>
                         </div>
                         <div class="d-grid col-md-3 mx-auto ">
@@ -288,11 +290,9 @@ input plan id. </h5>
                 </div>
                 <div class="card-body d-grid">
                         <div class="mb-3">
-                            <%-- <asp:Label runat="server" Text="Enter Mobile Number" CssClass="form-label"></asp:Label> --%>
                             <asp:TextBox ID="TextBox_WalletID" runat="server" CssClass="form-control" placeholder="Enter WalletID " ></asp:TextBox>
                         </div>
                     <div class="mb-1">
-                        <%-- <asp:Label runat="server" Text="Enter Mobile Number" CssClass="form-label"></asp:Label> --%>
                         <asp:TextBox ID="TextBox_PlanID" runat="server" CssClass="form-control" placeholder="Enter Plan ID"></asp:TextBox>
                     </div>
                         <div class="d-grid col-md-3 mx-auto">
@@ -322,15 +322,12 @@ a certain input duration </h5>
                 </div>
                 <div class="card-body d-grid">
                         <div class="mb-3">
-                            <%-- <asp:Label runat="server" Text="Enter Mobile Number" CssClass="form-label"></asp:Label> --%>
                             <asp:TextBox ID="start_date_avgSentTrans" runat="server" CssClass="form-control" placeholder="Enter startDate" TextMode="Date"></asp:TextBox>
                         </div>
                     <div class="mb-3">
-    <%-- <asp:Label runat="server" Text="Enter Mobile Number" CssClass="form-label"></asp:Label> --%>
     <asp:TextBox ID="end_date_avgSentTrans" runat="server" CssClass="form-control" placeholder="Enter endDate" TextMode="Date"></asp:TextBox>
 </div>
                     <div class="mb-1">
-                        <%-- <asp:Label runat="server" Text="Enter Mobile Number" CssClass="form-label"></asp:Label> --%>
                         <asp:TextBox ID="TextBox_WalletID_avgSentTrans" runat="server" CssClass="form-control" placeholder="Enter Wallet ID "></asp:TextBox>
                     </div>
                         <div class="d-grid col-md-3 mx-auto">

@@ -28,30 +28,24 @@ namespace WebApplication1
 
             command.CommandType = CommandType.Text;
 
-            // Extract text values from TextBox controls
-            string mobileNo = username.Text;  // Assuming 'username' is the TextBox for the mobile number
-            string pass = password.Text;     // Assuming 'password' is the TextBox for the password
+            string mobileNo = username.Text; 
+            string pass = password.Text;     
 
-            // Add parameters with their values
             command.Parameters.AddWithValue("@MobileNo", mobileNo);
             command.Parameters.AddWithValue("@Password", pass);
 
             try
             {
-                // Open the connection
                 connection.Open();
 
-                // Execute the scalar function
                 object result = command.ExecuteScalar();
 
-                // Convert the result to a Boolean
                 bool isValid = result != null && Convert.ToBoolean(result);
                 bool isAdmin = false;
                 if (mobileNo == "admin" && pass == "admin") {
                     isValid = true;
                     isAdmin = true; 
                 }   
-                // Check the result and respond accordingly
                 if (isValid)
                 {
                     
@@ -60,7 +54,6 @@ namespace WebApplication1
                         Session["bool"] = true;
                         Response.Redirect("AdminPage.aspx");
                     }
-                    // Redirect or perform additional actions
                     else {
                         Response.Redirect($"UserPage.aspx?mobileNo={mobileNo}");
                     }

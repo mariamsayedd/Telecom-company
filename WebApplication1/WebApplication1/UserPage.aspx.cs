@@ -143,12 +143,11 @@ namespace WebApplication1
             String serviceName = consumption1.Text;
 
             if (string.IsNullOrEmpty(startDate) || string.IsNullOrEmpty(endDate) || string.IsNullOrEmpty(serviceName))
-                ShowAlert("Please fill in the required fields", "warning");
+                outputText.InnerText = "Please fill in the required fields";
             else
             {
                 if ((!ExistsInDatabaseString("name", serviceName, "Service_plan")))
-                    ShowAlert("The specified plan name does not exist.Please enter a valid name", "warning");
-
+                    outputText.InnerText = "The specified plan name does not exist.Please enter a valid name";
                 else
                 {
                     SqlCommand command = new SqlCommand(query, connection);
@@ -169,7 +168,7 @@ namespace WebApplication1
                     }
                     else
                     {
-                        ShowAlert("No consumption within specified duration", "warning");
+                        outputText.InnerText = "No consumption within specified duration";
                     }
 
                 }
@@ -203,7 +202,7 @@ namespace WebApplication1
                     }
                     else
                     {
-                        ShowAlert("No unsubscribed plans", "warning");
+                        outputText.InnerText = "No unsubscribed plans";
                     }
 
                 }
@@ -231,7 +230,7 @@ namespace WebApplication1
             }
             else
             {
-                ShowAlert("No active plans in the current month", "warning");
+                outputText.InnerText = "No active plans in the current month";
             }
         }
         protected void getTransactions()
@@ -262,7 +261,7 @@ namespace WebApplication1
             }
             else
             {
-               ShowAlert("No cashback transactions for input wallet", "warning");
+                outputText.InnerText = "No cashback transactions for input wallet";
             }
         }
 
@@ -284,7 +283,8 @@ namespace WebApplication1
             }
             else
             {
-                ShowAlert("No records in the table yet.", "warning");  }
+                outputText.InnerText = "No records in the table yet.";
+            }
         }
         protected void getUnresolvedTickets()
         {
@@ -316,11 +316,11 @@ namespace WebApplication1
                         connection.Open();
                         adapter1.Fill(dataTable1);
                         int count = int.Parse(dataTable1.Rows[0][0].ToString());
-                        ShowAlert( "Number of unresolved tickets: " + count, "success");
+                        outputText.InnerText = "Number of unresolved tickets: " + count;
                     }
                     catch (Exception ex)
                     {
-                        ShowAlert("Error: " + ex.Message, "warning");
+                        Console.WriteLine("Error: " + ex.Message);
                     }
                 }
             }
@@ -356,7 +356,7 @@ namespace WebApplication1
                     }
                     catch (Exception ex)
                     {
-                        ShowAlert("Error: " + ex.Message, "warning");
+                        Console.WriteLine("Error: " + ex.Message);
                     }
                 }
             }
@@ -373,9 +373,9 @@ namespace WebApplication1
         {
             String serviceName = servicePlanRem.Text;
             if (string.IsNullOrEmpty(serviceName))
-                ShowAlert("Please fill in the required field", "warning");
+                outputText.InnerText = "Please fill in the required field";
             else if ((!ExistsInDatabaseString("name", serviceName, "Service_plan")))
-                ShowAlert("The specified plan name does not exist.Please enter a valid name","warning");
+                outputText.InnerText = "The specified plan name does not exist.Please enter a valid name";
             else
             {
                 try
@@ -396,18 +396,18 @@ namespace WebApplication1
                             if (result != null && result != DBNull.Value)
                             {
                                 int remainingAmount = Convert.ToInt32(result);
-                                ShowAlert($"Remaining plan amount: {remainingAmount}", "success");
+                                outputText.InnerText = $"Remaining plan amount: {remainingAmount}";
                             }
                             else
                             {
-                                ShowAlert("No result for the given plan name.", "warning");
+                                outputText.InnerText = "No result for the given plan name.";
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    ShowAlert($"Error: {ex.Message}", "warning");
+                    Console.WriteLine($"Error: {ex.Message}");
                 }
             }
         }
@@ -423,9 +423,9 @@ namespace WebApplication1
         {
             String serviceName = servicePlanExtra.Text;
             if (string.IsNullOrEmpty(serviceName))
-                ShowAlert("Please fill in the required field", "warning");
+                outputText.InnerText = "Please fill in the required field";
             else if ((!ExistsInDatabaseString("name", serviceName, "Service_plan")))
-                ShowAlert("The specified plan name does not exist.Please enter a valid name", "warning");
+                outputText.InnerText = "The specified plan name does not exist.Please enter a valid name";
             else
             {
                 try
@@ -446,18 +446,18 @@ namespace WebApplication1
                             if (result != null && result != DBNull.Value)
                             {
                                 int extraAmount = Convert.ToInt32(result);
-                                ShowAlert($"Extra plan amount: {extraAmount}", "success");
+                                outputText.InnerText = $"Extra plan amount: {extraAmount}";
                             }
                             else
                             {
-                                ShowAlert("No result for the given plan name.", "warning");
+                                outputText.InnerText = "No result for the given plan name.";
                             }
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    ShowAlert($"Error: {ex.Message}", "warning");
+                    Console.WriteLine($"Error: {ex.Message}");
                 }
             }
         }
@@ -496,13 +496,14 @@ namespace WebApplication1
                         }
                         else
                         {
-                            ShowAlert("No payments on this account yet.", "warning");              }
+                            outputText.InnerText = "No payments on this account yet.";
+                        }
 
 
                     }
                     catch (Exception ex)
                     {
-                        ShowAlert("Error: " + ex.Message, "warning");
+                        Console.WriteLine("Error: " + ex.Message);
                     }
                 }
             }
@@ -534,13 +535,13 @@ namespace WebApplication1
                         }
                         else
                         {
-                            ShowAlert("No subscribed plans in the past 5 months", "warning");
+                            outputText.InnerText = "No subscribed plans in the past 5 months";
                         }
 
                     }
                     catch (Exception ex)
                     {
-                        ShowAlert("Error: " + ex.Message, "warning");
+                        Console.WriteLine("Error: " + ex.Message);
                     }
                 }
             }
@@ -562,7 +563,7 @@ namespace WebApplication1
 
 
             if (string.IsNullOrEmpty(inputAmountText) || string.IsNullOrEmpty(InputPaymentMethod) || string.IsNullOrEmpty(InputPlanIDText))
-                ShowAlert("Please fill in all required fields", "warning");
+                outputText.InnerText = "Please fill in all required fields";
             else
             {
                 decimal inputAmount;
@@ -573,7 +574,7 @@ namespace WebApplication1
                 }
                 catch (FormatException)
                 {
-                    ShowAlert("Please enter a valid amount with at most 1 decimal place", "warning");
+                    outputText.InnerText = "Please enter a valid amount with at most 1 decimal place";
                     return;
                 }
 
@@ -583,14 +584,14 @@ namespace WebApplication1
                 }
                 catch (FormatException)
                 {
-                    ShowAlert("Please enter a valid plan ID.", "warning");
+                    outputText.InnerText = "Please enter a valid plan ID.";
                     return;
                 }
 
                 if (InputPaymentMethod != "cash" && InputPaymentMethod != "credit")
-                    ShowAlert("The payment method can only be cash or credit.", "warning");
+                    outputText.InnerText = "The payment method can only be cash or credit.";
                 else if ((!ExistsInDatabaseInt("planID", InputPlanID, "Service_plan")))
-                    ShowAlert("The specified plan ID does not exist.Please enter a valid ID", "warning");
+                    outputText.InnerText = "The specified plan ID does not exist.Please enter a valid ID";
                 else
                 {
                     using (SqlConnection connection = new SqlConnection(connectionString))
@@ -612,13 +613,13 @@ namespace WebApplication1
                                 DataTable dataTable = new DataTable();
                                 connection.Open();
                                 adapter.Fill(dataTable);
-                                ShowAlert("Subscription has been successfully renewed!", "success");
+                                outputText.InnerText = "Subscription has been successfully renewed!";
 
                             }
                         }
                         catch (Exception ex)
                         {
-                            ShowAlert("Error: " + ex.Message, "warning");
+                            outputText.InnerText = "Error: " + ex.Message;
                         }
                     }
 
@@ -641,7 +642,7 @@ namespace WebApplication1
             string InputBenefitIDText = Payment_wallet_cashback_Benefit_ID.Text;
 
             if (string.IsNullOrEmpty(InputPaymentIDText) || string.IsNullOrEmpty(InputBenefitIDText))
-                ShowAlert("Please fill in all required fields", "warning");
+                outputText.InnerText = "Please fill in all required fields";
             else
             {
 
@@ -653,7 +654,7 @@ namespace WebApplication1
                 }
                 catch (FormatException)
                 {
-                    ShowAlert("Please enter a valid payment ID", "warning");
+                    outputText.InnerText = "Please enter a valid payment ID";
                     return;
                 }
                 try
@@ -662,12 +663,12 @@ namespace WebApplication1
                 }
                 catch (FormatException)
                 {
-                    ShowAlert("Please enter a valid benefit ID.", "warning");
+                    outputText.InnerText = "Please enter a valid benefit ID.";
                     return;
                 }
 
                 if ((!ExistsInDatabaseInt("paymentID", InputPaymentID, "Payment")))
-                    ShowAlert("The specified payment ID does not exist.Please enter a valid ID", "warning");
+                    outputText.InnerText = "The specified payment ID does not exist.Please enter a valid ID";
                 else
                 {
                     using (SqlConnection connection = new SqlConnection(connectionString))
@@ -694,11 +695,11 @@ namespace WebApplication1
                                 adapter.Fill(dataTable);
                                 GridView1.DataSource = dataTable;
                                 GridView1.DataBind();
-                                ShowAlert("Cashback calculated and wallet's balance updated successfully!", "success");
+                                outputText.InnerText = "Cashback calculated and wallet's balance updated successfully!";
                             }
                             catch (Exception ex)
                             {
-                                ShowAlert("Error: " + ex.Message, "warning");
+                                Console.WriteLine("Error: " + ex.Message);
                             }
                         }
                     }
@@ -725,7 +726,7 @@ namespace WebApplication1
 
 
             if (string.IsNullOrEmpty(InputAmountText) || string.IsNullOrEmpty(InputPaymentMethod))
-                ShowAlert("Please fill in all required fields", "warning");
+                outputText.InnerText = "Please fill in all required fields";
             else
             {
                 decimal InputAmount;
@@ -735,14 +736,14 @@ namespace WebApplication1
                 }
                 catch (FormatException)
                 {
-                    ShowAlert("Please enter a valid amount.", "warning");
+                    outputText.InnerText = "Please enter a valid amount.";
                     return;
                 }
 
                 using (SqlConnection connection = new SqlConnection(connectionString))
                 {
                     if (InputPaymentMethod != "cash" && InputPaymentMethod != "credit")
-                        ShowAlert("The payment method can only be cash or credit.", "warning");
+                        outputText.InnerText = "The payment method can only be cash or credit.";
                     else
                     {
                         string storedProcedure = "Initiate_balance_payment";
@@ -765,11 +766,12 @@ namespace WebApplication1
                                 adapter.Fill(dataTable);
                                 GridView1.DataSource = dataTable;
                                 GridView1.DataBind();
-                                ShowAlert("Balance recharged successfully!", "success");
+                                outputText.InnerText = "Balance recharged successfully!";
+
                             }
                             catch (Exception ex)
                             {
-                                ShowAlert("Error: " + ex.Message, "warning");
+                                Console.WriteLine("Error: " + ex.Message);
                             }
                         }
 
@@ -793,7 +795,7 @@ namespace WebApplication1
             string InputVoucherText = Redeem_voucher_voucherID.Text;
 
             if (string.IsNullOrEmpty(InputVoucherText))
-                ShowAlert("Please fill in the required field", "Wwarning");
+                outputText.InnerText = "Please fill in the required field";
             else
             {
                 int InputVoucher;
@@ -803,12 +805,12 @@ namespace WebApplication1
                 }
                 catch (FormatException)
                 {
-                    ShowAlert("Please enter a valid voucher ID", "warning");
+                    outputText.InnerText = "Please enter a valid voucher ID";
                     return;
                 }
 
                 if (!ExistsInDatabaseInt("voucherID", InputVoucher, "Voucher"))
-                    ShowAlert("Please enter a valid voucher ID", "warning");
+                    outputText.InnerText = "Please enter a valid voucher ID";
                 else
                 {
                     using (SqlConnection connection = new SqlConnection(connectionString))
@@ -832,11 +834,11 @@ namespace WebApplication1
                                 adapter.Fill(dataTable);
                                 GridView1.DataSource = dataTable;
                                 GridView1.DataBind();
-                                ShowAlert("Voucher redeemed successfully!", "success");
+                                outputText.InnerText = "Voucher redeemed successfully!";
                             }
                             catch (Exception ex)
                             {
-                                ShowAlert("Error: " + ex.Message, "warning");
+                                Console.WriteLine("Error: " + ex.Message);
                             }
                         }
                     }
@@ -879,17 +881,6 @@ namespace WebApplication1
         protected void signOut(object sender, EventArgs e)
         {
             Response.Redirect("Login.aspx");
-        }
-
-        private void ShowAlert(string message, string alertType)
-        {
-            string alertHtml = $@"
-                <div class='alert alert-{alertType} alert-dismissible fade show' role='alert'>
-                    <strong>{(alertType == "success" ? "Success!" : "Warning!")}</strong> {message}
-                    <button type='button' class='btn-close' data-bs-dismiss='alert' aria-label='Close'></button>
-                </div>";
-
-            AlertPlaceholder.Text = alertHtml;
         }
     }
 }
