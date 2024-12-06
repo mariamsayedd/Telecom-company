@@ -130,21 +130,26 @@ namespace WebApplication1
             }
         }
 
+        
+
         protected void get_Accepted_Payment_Trans(object sender, EventArgs e)
         {
+            // Define your query
             string query = "SELECT COUNT(1) FROM Payment WHERE mobileNo = @Input";
             string inputMobileNumber = Accepted_Payment_Transactions_Mobile_Number.Text;
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
+                    // Add parameter to prevent SQL Injection
                     command.Parameters.AddWithValue("@Input", inputMobileNumber);
 
                     connection.Open();
 
+                    // Execute query
                     int count = Convert.ToInt32(command.ExecuteScalar());
 
-                    if (count > 0)
+                    if (count > 0)// Input exists in the database
                     {
                         string query2 = "exec  Account_Payment_Points @MobileNumber";
 
@@ -157,7 +162,7 @@ namespace WebApplication1
                             DataTable dataTable = new DataTable();
                             adapter.Fill(dataTable);
                             int acceptedPayment_count = int.Parse(dataTable.Rows[0][0].ToString());
-                            ShowAlert("Accepted payment :" + acceptedPayment_count,"warning");
+                            outputText.InnerText = "Accepted payment :" + acceptedPayment_count;
                         }
                         catch (Exception ex)
                         {
@@ -167,6 +172,7 @@ namespace WebApplication1
                     }
                     else
                     {
+                        // Input does not exist in the database
                         ShowAlert($"An error occured , Please enter a valid mobile number", "none");
                     }
                 }
@@ -204,7 +210,7 @@ namespace WebApplication1
                         int count = Convert.ToInt32(command.ExecuteScalar());
 
 
-                        if (count > 0)
+                        if (count > 0)// Input exists in the database
                         {
 
                             string query2 = "select dbo.Wallet_Cashback_Amount(@WalletId,@planId)";
@@ -217,7 +223,8 @@ namespace WebApplication1
                                 DataTable dataTable = new DataTable();
                                 adapter.Fill(dataTable);
                                 int cashback_amount = int.Parse(dataTable.Rows[0][0].ToString());
-                                ShowAlert("cashback amount : " + cashback_amount, "success");                  }
+                                cashback_H1.InnerText = "cashback amount : " + cashback_amount;
+                            }
                             catch (Exception ex)
                             {
                                 ShowAlert($"An error occured , Please enter a valid WalletID or PlanID", "none");
@@ -226,6 +233,7 @@ namespace WebApplication1
                         }
                         else
                         {
+                            // Input does not exist in the database
                             ShowAlert($"An error occured , Please enter a valid WalletID or PlanID", "none");
                         }
                         connection.Close();
@@ -260,8 +268,8 @@ namespace WebApplication1
                         SqlDataAdapter adapter = new SqlDataAdapter(command);
                         DataTable dataTable = new DataTable();
                         adapter.Fill(dataTable);
-                        int avgSentTrans = int.Parse(dataTable.Rows[0][0].ToString());
-                        ShowAlert("Average Sent Transaction : " + avgSentTrans, "success");
+                        int avgSentTrans = int.Parse(dataTable.Rows[0][0].ToString());//needs error handling
+                        avg_Sent_Trans_h3.InnerText = "Average Sent Transaction : " + avgSentTrans;
                     }
                     catch (Exception ex)
                     {
@@ -331,7 +339,7 @@ namespace WebApplication1
             try
             {
                 if (ExistsInDatabaseString("mobileNo", mobileNo, "Payment"))
-                    ShowAlert("points for " + mobileNo + " updated successfuly", "success") ;
+                    H1.InnerText = "points for " + mobileNo + " updated successfuly";
                 else
                     ShowAlert($"An error occured , Please enter a valid mobile number , points did not update", "none");
             }
