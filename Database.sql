@@ -77,9 +77,6 @@ mobileNo Char(11),
 FOREIGN KEY (mobileNo) REFERENCES customer_account (mobileNo)
 )
 
-
-
-
 create table process_payment(
 paymentID int,
 planID int,
@@ -790,6 +787,7 @@ where planID = @plan_id and mobileNo = @mobile_num
 
 go
 
+
 --//////////////////////////////////////////////////////////////////////////////////////////////////////
 ------------------------------------------------------------------------------------------------------------
 ----------------------------------------Payment_wallet_cashback-----------------------
@@ -831,7 +829,6 @@ CREATE PROCEDURE [Initiate_balance_payment]
 as
 Insert into Payment (amount,date_of_payment,payment_method,status,mobileNo)
 values(@amount,CURRENT_TIMESTAMP,@payment_method,'successful',@mobile_num)
-
 update customer_account
 set balance = balance + @amount
 where mobileNo = @mobile_num
@@ -1016,7 +1013,6 @@ insert into customer_profile values(0,'mohamed','abdelaziz','mada','tagmo3','200
 insert into customer_account values('01234567890','test',0,'postpaid','2024/11/11','active',0,0)
 insert into benefits values('test','2024/11/11','active','01234567890')
 insert into Technical_support_ticket values('01234567890','test',1,'Open')
-insert into voucher values(150,'2025/11/11',151,'01234567890',getdate(),1)
 insert into shop values ('test','test')
 insert into Payment values(20,GETDATE(),'cash','successful','01234567890')
 select * from customer_account
@@ -1024,5 +1020,80 @@ SELECT nationalID FROM customer_account WHERE mobileNo ='01234567890'
 SELECT * FROM allBenefits
 SELECT * FROM Voucher
 select * from shop
+insert into shop values('l','l')
+select * from allShops
 
+
+-- Insert into customer_profile
+INSERT INTO customer_profile 
+VALUES 
+(101, 'John', 'Doe', 'john.doe@example.com', '123 Elm Street', '1985-05-15'),
+(102, 'Jane', 'Smith', 'jane.smith@example.com', '456 Oak Avenue', '1990-08-22');
+
+
+-- Corrected INSERT statement
+INSERT INTO customer_account 
+VALUES
+('01234567890', 'password123', 50,'postpaid', '2020-01-01','active', 0, 101),
+('09876543210', 'securePass', 30, 'prepaid', '2021-06-15','active', 0, 102);
+
+-- Insert into Service_plan
+INSERT INTO Service_plan(name, price, SMS_offered, minutes_offered, data_offered, description)
+VALUES
+('Basic Plan', 10, 100, 50, 1, 'Basic'),
+('Standard Plan', 20, 300, 100, 5, 'Standard'),
+('Premium Plan', 30, 500, 200, 10, 'Premium');
+
+select * from Service_plan
+
+-- Insert into Subscription
+INSERT INTO Subscription(mobileNo, planID, subscription_date, status)
+VALUES
+('01234567890', 3, '2024-12-05', 'active'), -- Within 5 months
+('01234567890', 2, '2024-02-15', 'active'), -- Older than 5 months
+('09876543210', 3, '2024-09-01', 'active'); -- Within 5 months
+
+select * from dbo.Subscribed_plans_5_Months ('09876543210')
+
+
+Exec Initiate_plan_payment @mobile_num = '01234567890', @amount =55, @payment_method = 'cash',
+@plan_id = 33
+
+select * from Cashback
+select * from Wallet ;
+
+insert into Wallet
+values(50,'egp','2024-12-05',101,'01234567890')
+
+select * from dbo.Subscribed_plans_5_Months('01234567890');
+select * from process_payment
+select * from payment
+
+Exec Payment_wallet_cashback @mobile_num = '01234567890',@payment_id = 1, @benefit_id = 1
+
+insert into Cashback
+values(1,1,50,'2024-12-05')
+
+insert into shop
+values('m','m')
+
+select * from Payment
+select * from customer_account
+
+Exec Redeem_voucher_points @mobile_num = '01234567890', @voucher_id = 2
+
+INSERT INTO Voucher 
+VALUES 
+(100, '2024-1-10', 10, '01234567890', '2024-12-01', 1),
+(100, '2025-01-01', 30, '01234567890', '2025-12-01', 2) 
+
+select * from voucher
+
+UPDATE customer_account 
+SET points = 50 
+WHERE mobileNo = '01234567890';
+Select v.points 
+    from Voucher v 
+    where v.voucherID =2
+      and v.expiry_date > CURRENT_TIMESTAMP
 
