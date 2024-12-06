@@ -1044,6 +1044,8 @@ VALUES
 ('Standard Plan', 20, 300, 100, 5, 'Standard'),
 ('Premium Plan', 30, 500, 200, 10, 'Premium');
 
+select * from Service_plan
+
 -- Insert into Subscription
 INSERT INTO Subscription(mobileNo, planID, subscription_date, status)
 VALUES
@@ -1053,11 +1055,9 @@ VALUES
 
 select * from dbo.Subscribed_plans_5_Months ('09876543210')
 
-ALTER TABLE customer_account CHECK CONSTRAINT ALL;
-ALTER TABLE customer_account NOCHECK CONSTRAINT ALL;
 
 Exec Initiate_plan_payment @mobile_num = '01234567890', @amount =55, @payment_method = 'cash',
-@plan_id = 1
+@plan_id = 33
 
 select * from Cashback
 select * from Wallet ;
@@ -1096,3 +1096,4 @@ Select v.points
     from Voucher v 
     where v.voucherID =2
       and v.expiry_date > CURRENT_TIMESTAMP
+

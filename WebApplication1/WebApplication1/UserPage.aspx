@@ -90,7 +90,7 @@
                 <asp:ListItem Value="11">Show the top 10 successful payments with the highest value.</asp:ListItem>
                 <asp:ListItem Value="12">View details for all shops.</asp:ListItem>
                 <asp:ListItem Value="13">Show all service plans subscribed to in the past 5 months.</asp:ListItem>
-                <asp:ListItem Value="14">Renew the subscription a plan.</asp:ListItem>
+                <asp:ListItem Value="14">Renew the subscription of a plan.</asp:ListItem>
                 <asp:ListItem Value="15">Get the amount of cashback that will be returned on the wallet of the customer of the input mobile number from a certain payment transaction of a specified benefit.</asp:ListItem>
                 <asp:ListItem Value="16">Recharge balance.</asp:ListItem>
                 <asp:ListItem Value="17">Redeem a certain voucher.</asp:ListItem>
@@ -136,7 +136,7 @@
               <div class="col-md-4">
                   <div class="card shadow">
                       <div class="card-header text-center bg-primary text-white">
-                          <h5>Renew the subscription a plan.</h5>
+                          <h5>Display the remaining amount for the last payment.</h5>
                       </div>
                       <div class="card-body d-grid">
                               <div class="mb-3">
@@ -187,7 +187,7 @@
                             <asp:TextBox ID="Initiate_Payment_amount" runat="server" CssClass="form-control" placeholder="Enter amount"></asp:TextBox>
                         </div>
                         <div class="mb-3">
-                            <asp:TextBox ID="Initiate_Payment_method" runat="server" CssClass="form-control" placeholder="Enter the payment method you want"></asp:TextBox>
+                            <asp:TextBox ID="Initiate_Payment_method" runat="server" CssClass="form-control" placeholder="Enter the payment method you want(cash,credit)"></asp:TextBox>
                         </div>
                         <div class="mb-3">
                             <asp:TextBox ID="Initiate_planid" runat="server" CssClass="form-control" placeholder="Enter plan ID"></asp:TextBox>
@@ -237,7 +237,7 @@
                             <asp:TextBox ID="Initiate_balance_payment_amount" runat="server" CssClass="form-control" placeholder="Enter the amount"></asp:TextBox>
                         </div>
                         <div class="mb-3">
-                            <asp:TextBox ID="Initiate_balance_payment_paymentMethod" runat="server" CssClass="form-control" placeholder="Enter the payment method"></asp:TextBox>
+                            <asp:TextBox ID="Initiate_balance_payment_paymentMethod" runat="server" CssClass="form-control" placeholder="Enter the payment method(cash,credit)"></asp:TextBox>
                         </div>
                         <div class="d-grid col-md-3 mx-auto">
                             <asp:Button ID="Initiate_balance_payment_submit" runat="server" OnClick="RechargeBalanceClicked" Text="Submit" CssClass="btn btn-primary btn-sm" />
@@ -268,8 +268,6 @@
         </div>
     </div>
 </div>
-
-
          <div class="container mt-5">
         <asp:GridView ID="GridView1" runat="server" CssClass="table table-striped table-bordered table-hover" AutoGenerateColumns="true">
         </asp:GridView>
